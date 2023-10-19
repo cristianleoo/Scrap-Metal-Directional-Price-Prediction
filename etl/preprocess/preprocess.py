@@ -39,6 +39,12 @@ class Preprocess():
         except IndexError:
             self.stock = None
             print(f'Stock file for {self.tick} not found')
+
+        try:
+            self.target = pd.read_csv(os.path.join(os.getcwd(), 'data/target/target_clean.csv'))
+        except FileNotFoundError:
+            self.target = None
+            print(f'Target file for {self.tick} not found')
         # try:
         #     earning_file = glob.glob(os.path.join(os.getcwd(), 'data', self.tick, 'earnings.csv'))[0]
         #     self.earning = pd.read_csv(earning_file)
@@ -125,6 +131,7 @@ class Preprocess():
             self.combination = pd.merge(self.combination, self.finbert_sentiment, on='date', how='left')
         self.combination.fillna(method='ffill', inplace=True)
         self.combination.fillna(method='bfill', inplace=True)
+        self.combination['target'] = self.target['Target']
 
     def export_to_csv(self):
         if not os.path.exists(f"{os.getcwd()}/data/preprocessed"):

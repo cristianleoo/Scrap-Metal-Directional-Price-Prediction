@@ -77,7 +77,7 @@ if __name__ == "__main__":
                  todate=todate, 
                  etfs=etfs,
                  benzinga=False, 
-                 yahoo=True, 
+                 yahoo=False, 
                  fred=False, 
                  alpha=False, 
                  target=False)
