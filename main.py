@@ -23,7 +23,7 @@ class PullData:
     def get_data(self, 
                  tick_list, 
                  etfs=None,
-                 fromdate="2021-01-01", 
+                 fromdate="2010-01-01", 
                  todate=datetime.datetime.today().strftime("%Y-%m-%d"),
                  benzinga=True, 
                  yahoo=True, 
@@ -61,7 +61,7 @@ class PullData:
 if __name__ == "__main__":
     etl = PullData()
 
-    fromdate = "2018-01-01"
+    fromdate = "2010-01-01"
     todate = datetime.datetime.today().strftime("%Y-%m-%d")
     
     tick_list = [
@@ -76,11 +76,11 @@ if __name__ == "__main__":
                  fromdate=fromdate, 
                  todate=todate, 
                  etfs=etfs,
-                 benzinga=False, 
-                 yahoo=False, 
-                 fred=False, 
+                 benzinga=True, 
+                 yahoo=True, 
+                 fred=True, 
                  alpha=False, 
-                 target=False)
+                 target=True)
     
     pipeline = Preprocess(tick_list)
     pipeline.main()
