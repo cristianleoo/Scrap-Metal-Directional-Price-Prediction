@@ -53,8 +53,6 @@ class PullData:
             fred.fetch_scrap()
         if alpha:
             alpha = Alphavantage(api_keys)
-            # for tick in tick_list:
-            #     alpha.fetch_earning_data(tick)
             alpha.fetch_sentiment_score()
 
 # working directory should be the same as this file

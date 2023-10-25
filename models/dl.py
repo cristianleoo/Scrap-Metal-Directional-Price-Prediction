@@ -3,16 +3,10 @@ import copy
 import torch
 from torch import nn
 from torch.nn import init as init
-from torch.autograd import Variable
-from torch.utils.data import Dataset, DataLoader
-import pandas as pd
+from torch.utils.data import Dataset
 import numpy as np
-import os
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from sklearn.preprocessing import RobustScaler, Normalizer, OneHotEncoder
 from mylstm.lstm import LstmCell
-from models.ingest import Ingest
+from ingest import Ingest
     
 class CustomDataset(Dataset):
     def __init__(self, data, labels):
@@ -28,8 +22,10 @@ class CustomDataset(Dataset):
         return x, y
     
 class DL(Ingest):
-    def __init__(self):
+    def __init__(self, model_name='LSTM'):
+        super().__init__()
         self.model = None
+        self.model_name = model_name
 
         # try:
         #     self.device = torch.device('cuda' if torch.cuda.is_available() else 'mps')
@@ -38,19 +34,22 @@ class DL(Ingest):
         #     self.device = torch.device('cpu')
         #     print(f'Using {self.device}')
         self.device = torch.device('cpu')
+
+    #############################
     
     def train(self, epochs=200, early_stopping=50, n_layers=3):
         if self.X_train is None:
-            X_train, X_val, X_test, y_train, y_val, y_test = self.split(dl=True)
+            self.X_train, self.X_val, self.X_test, self.y_train, self.y_val, self.y_test = self.split(dl=True)
         
+        X_train, X_val, X_test, y_train, y_val, y_test = self.X_train, self.X_val, self.X_test, self.y_train, self.y_val, self.y_test
         X_train = X_train.reshape(X_train.shape[0], 1, X_train.shape[1])
         X_val = X_val.reshape(X_val.shape[0], 1, X_val.shape[1])
         X_test = X_test.reshape(X_test.shape[0], 1, X_test.shape[1])
-        y_train = y_train.reshape(y_train.shape[0], 1, y_train.shape[1])
-        y_val = y_val.reshape(y_val.shape[0], 1, y_val.shape[1])
-        y_test = y_test.reshape(y_test.shape[0], 1, y_test.shape[1])
+        y_train = y_train.values.reshape(-1, 1)
+        y_val = y_val.values.reshape(-1, 1)
+        y_test = y_test.values.reshape(-1, 1)
 
-        model = LstmCell(input_size=self.X_train.shape[-1], hidden_size=128, output_size=3, n_layers=1, dropout=0.25)
+        model = LstmCell(input_size=self.X_train.shape[-1], hidden_size=128, output_size=1, n_layers=1, dropout=0.25)
         
         model.to(self.device)
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-2, weight_decay=1e-5)
@@ -62,6 +61,8 @@ class DL(Ingest):
         y_train = torch.tensor(y_train, dtype=torch.float32).to(self.device)
         y_val = torch.tensor(y_val, dtype=torch.float32).to(self.device)
         y_test = torch.tensor(y_test, dtype=torch.float32).to(self.device)
+
+        self.X_train, self.X_val, self.X_test, self.y_train, self.y_val, self.y_test = X_train, X_val, X_test, y_train, y_val, y_test
 
         # Set batch sizes
         batch_size = 5
@@ -115,9 +116,8 @@ class DL(Ingest):
                     )
             # set model in evaluation mode and run through the test set
             model.eval()
-            y_pred = model(X_test)
-            y_test = y_test
-            ce = criterion(y_pred, y_test)
+            y_pred = model(X_val)
+            ce = criterion(y_pred, y_val)
             # acc = (torch.argmax(y_pred, 1) == torch.argmax(y_test, 1)).float().mean()
             rmse = float(torch.sqrt(ce))
             ce = float(ce)
@@ -174,6 +174,8 @@ class DL(Ingest):
         self.model = model
         return model
     
+    #############################
+    
     def test(self):
         if self.model is None:
             self.train()
@@ -188,6 +190,8 @@ class DL(Ingest):
             print(f'Test loss: {loss.item():.4f}')
         return loss.item()
     
+    #############################
+    
     def predict(self, X=None):
         if self.model is None:
             print('Model is not trained yet. Training now...')
@@ -195,24 +199,42 @@ class DL(Ingest):
 
         if isinstance(X, str):
             if X=='train':
+                code = 'Train'
                 X = self.X_train
-            elif X=='eval':
+                y = self.y_train
+            elif X=='val':
+                code = 'Validation'
                 X = self.X_val
+                y = self.y_val
             elif X=='test':
+                code = 'Test'
                 X = self.X_test
+                y = self.y_test
 
         X = torch.tensor(X, dtype=torch.float32).to(self.device)
         with torch.no_grad():
             outputs = self.model.forward(X)
+        mse = nn.MSELoss()
+        loss = mse(outputs, y)
+        print(f'{code} Loss: {loss.item():.4f}')
+
+        self.save_loss(loss.item().round(4), code, self.model_name)
 
         return outputs
     
+    #############################
+    
     def save_model(self, model, path):
         torch.save(model.state_dict(), path)
+
+    #############################
     
     def load_model(self, model, path):
         model.load_state_dict(torch.load(path))
         return model
 
 model = DL()
-model.train()
+# model.train()
+model.predict('train')
+model.predict('val')
+model.predict('test')

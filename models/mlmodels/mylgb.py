@@ -1,17 +1,20 @@
-from sklearn.ensemble import RandomForestRegressor
+from lightgbm import LGBMRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
 
-class MyRF:
+class MyLGB:
     def __init__(self, params=None):
         if params is None:
             self.params = {
                 'n_estimators': 100,
-                'max_depth': None,
-                'min_samples_split': 2,
-                'min_samples_leaf': 1,
-                'max_features': 'auto',
-                'bootstrap': True,
+                'max_depth': -1,
+                'learning_rate': 0.1,
+                'num_leaves': 31,
+                'min_child_samples': 20,
+                'subsample': 1.0,
+                'colsample_bytree': 1.0,
+                'reg_alpha': 0.0,
+                'reg_lambda': 0.0,
                 'random_state': 42,
             }
         else:
@@ -20,16 +23,19 @@ class MyRF:
 
         self.param_grid = {
             'n_estimators': [100, 200, 500],
-            'max_depth': [3, 5, 7],
-            'min_samples_split': [2, 5, 10],
-            'min_samples_leaf': [1, 2, 4],
-            'max_features': ['auto', 'sqrt'],
-            'bootstrap': [True, False],
+            'max_depth': [-1, 3, 5, 7],
+            'learning_rate': [0.01, 0.05, 0.1],
+            'num_leaves': [31, 50, 100],
+            'min_child_samples': [20, 50, 100],
+            'subsample': [0.8, 1.0],
+            'colsample_bytree': [0.8, 1.0],
+            'reg_alpha': [0.0, 0.1, 0.5],
+            'reg_lambda': [0.0, 0.1, 0.5],
             'random_state': [42],
         }
 
     def fit(self, X_train, y_train, X_val=None, y_val=None, X_test=None, y_test=None):
-        self.model = RandomForestRegressor(**self.params)
+        self.model = LGBMRegressor(**self.params)
         self.model.fit(X_train, y_train)
         return self.model
 
@@ -39,11 +45,10 @@ class MyRF:
     def grid_search(self, X_train, y_train, X_val=None, y_val=None, X_test=None, y_test=None, cv=5, scoring='neg_root_mean_squared_error', params=None):
         if params is None:
             params = self.params
-        grid_search = GridSearchCV(estimator=RandomForestRegressor(**params), 
+        grid_search = GridSearchCV(estimator=LGBMRegressor(**params), 
                                    param_grid=self.param_grid, 
                                    cv=cv,
                                    scoring=scoring, 
-                                   refit=True, 
                                    n_jobs=-1, 
                                    verbose=1, 
                                    return_train_score=True)

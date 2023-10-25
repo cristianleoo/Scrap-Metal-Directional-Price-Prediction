@@ -1,4 +1,4 @@
-from sklearn.model_selection import GridSearchCV, KFold
+from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
 import xgboost as xgb
 
@@ -56,7 +56,7 @@ class MyXGB:
 
     def grid_search(self, X_train, y_train, X_val=None, y_val=None, X_test=None, y_test=None, cv=5, scoring='neg_root_mean_squared_error'):
         grid_search = GridSearchCV(estimator=xgb.XGBRegressor(**self.params), param_grid=self.param_grid, cv=cv,
-                                   scoring=scoring, refit=True, n_jobs=-1, verbose=2, return_train_score=True)
+                                   scoring=scoring, refit=True, n_jobs=-1, verbose=1, return_train_score=True)
         grid_search.fit(X_train, y_train)
         self.params = grid_search.best_params_
         self.model = grid_search.best_estimator_
