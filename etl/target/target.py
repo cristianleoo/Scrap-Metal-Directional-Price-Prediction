@@ -40,6 +40,7 @@ class Target:
         return pd.cut(serie, 
                       bins=[-np.inf, quartiles[0], quartiles[1], np.inf], 
                       labels=[0, 1, 2])
+    
 
     def preprocess(self):
         df = self.get_data()
@@ -70,7 +71,13 @@ class Target:
         # df = df[cols]
         # df.reset_index(drop=True, inplace=True)
         df = self.indexing(df)
-        df['Target'] = self.classify(df['Value'])
+        # df['Target'] = self.classify(df['Value'])
+        df['Target'] = df['Value']
+        df.drop(['Value'], axis=1, inplace=True)
+        df.rename(columns={'Date':'date'}, inplace=True)
+        df = df.resample('M', on='date').last().reset_index()
+        df['date'] = df['date'].dt.date
+
         return df
     
     #############################

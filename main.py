@@ -23,7 +23,7 @@ class PullData:
     def get_data(self, 
                  tick_list, 
                  etfs=None,
-                 fromdate="2010-01-01", 
+                 fromdate="2000-01-01", 
                  todate=datetime.datetime.today().strftime("%Y-%m-%d"),
                  benzinga=True, 
                  yahoo=True, 
@@ -40,7 +40,7 @@ class PullData:
             Benzinga(tick_list, etfs=etfs, api_keys=api_keys).pull_batch_benzinga(fromdate, todate)
             for tick in tick_list:
                 try:
-                    fin = FinBert(tick)
+                    fin = FinBert(tick, load=False)
                     fin.main()
                 except Exception as e:
                     print(f"Failed to get sentiment for {tick} | Reason: {e}")
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     todate = datetime.datetime.today().strftime("%Y-%m-%d")
     
     tick_list = [
-        'NUE', 'RDUS', 'STLD', 'CTRM', 'LKQ', 'NSC' # stocks
+        'NUE', 'STLD', 'LKQ', 'NSC' # stocks
                 ]
     etfs = [
         'XME', 'PICK', 'REMX', 'DBB', # metal ETFs
@@ -76,9 +76,9 @@ if __name__ == "__main__":
                  fromdate=fromdate, 
                  todate=todate, 
                  etfs=etfs,
-                 benzinga=True, 
-                 yahoo=True, 
-                 fred=True, 
+                 benzinga=False, 
+                 yahoo=False, 
+                 fred=False, 
                  alpha=False, 
                  target=True)
     

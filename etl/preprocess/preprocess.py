@@ -73,12 +73,15 @@ class Preprocess():
                 finbert = finbert.resample('M', on='created')['sentiment'].mean().reset_index()
                 finbert['sentiment'] = finbert['sentiment'].round(4)
                 finbert = finbert.rename(columns={'created': 'date', 'sentiment': f'{tick}_sentiment'})
+
+                if self.finbert_sentiment is None:
+                    self.finbert_sentiment = finbert
+                else:
+                    self.finbert_sentiment = pd.merge(self.finbert_sentiment, finbert, on='date', how='outer')
+
             except FileNotFoundError:
                 print(f'Finbert file for {tick} not found')
-            if self.finbert_sentiment is None:
-                self.finbert_sentiment = finbert
-            else:
-                self.finbert_sentiment = pd.merge(self.finbert_sentiment, finbert, on='date', how='outer')
+            
 
         self.finbert_sentiment.fillna(method='ffill', inplace=True)
         #self.finbert_sentiment['date'] = pd.to_datetime(self.finbert_sentiment['date'])
@@ -131,7 +134,15 @@ class Preprocess():
             self.combination = pd.merge(self.combination, self.finbert_sentiment, on='date', how='left')
         self.combination.fillna(method='ffill', inplace=True)
         self.combination.fillna(method='bfill', inplace=True)
-        self.combination['target'] = self.target['Target']
+
+        try:
+            self.combination.drop(['GDXJ_x', 'GDXJ_y'], axis=1, inplace=True)
+        except KeyError:
+            pass
+
+        self.target['date'] = pd.to_datetime(self.target['date']).dt.date
+        self.combination = pd.merge(self.combination, self.target, on='date', how='inner')
+        print(self.combination.head())
 
     def export_to_csv(self):
         if not os.path.exists(f"{os.getcwd()}/data/preprocessed"):
