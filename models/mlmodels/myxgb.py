@@ -1,32 +1,47 @@
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, accuracy_score
 import xgboost as xgb
 
 class MyXGB:
-    def __init__(self, params=None):
+    def __init__(self, params=None, binary=True):
         if params is None:
             self.params = {
-                'max_depth': 3,
+                # 'max_depth': 3,
                 'learning_rate': 0.1,
-                'n_estimators': 100,
-                'objective': 'reg:squarederror',
+                'n_estimators': 1000,
+                # 'objective': 'reg:squarederror',
                 'booster': 'gbtree',
                 'n_jobs': -1,
                 'random_state': 42,
             }
+            if binary:
+                self.params['objective'] = 'binary:logistic'
+            else:
+                self.params['objective'] = 'reg:squarederror'
         else:
             self.params = params
         self.model = None
 
         self.param_grid = {
-            'max_depth': [3, 5, 7],
+            # 'max_depth': [3, 5, 7],
             'learning_rate': [0.001, 0.01, 0.1],
-            'n_estimators': [100, 200, 500],
-            'objective': ['reg:squarederror'],
+            # 'num_boost_round': [100, 500, 1000],
             'booster': ['gbtree'],
             'n_jobs': [-1],
             'random_state': [42],
         }
+        self.num_boost_round = 1000
+        if binary:
+            self.param_grid['objective'] = ['binary:logistic']
+            # use cross entropy for binary classification
+            self.scoring = 'neg_log_loss'
+        else:
+            self.param_grid['objective'] = ['reg:squarederror']
+            self.scoring = 'neg_root_mean_squared_error'
+        
+        self.binary = binary
+
+    #############################
 
     def fit(self, X_train, y_train, X_val=None, y_val=None, X_test=None, y_test=None):
         dtrain = xgb.DMatrix(X_train, label=y_train, silent=False)
@@ -38,25 +53,45 @@ class MyXGB:
         if X_test is not None and y_test is not None:
             dtest = xgb.DMatrix(X_test, label=y_test)
             watchlist.append((dtest, 'test'))
-        self.model = xgb.train(self.params, dtrain, num_boost_round=self.params['n_estimators'], evals=watchlist,
-                               evals_result=evals_result, early_stopping_rounds=10, verbose_eval=False)
+        self.model = xgb.train(self.params, dtrain, num_boost_round=self.num_boost_round, evals=watchlist,
+                               evals_result=evals_result, early_stopping_rounds=100, verbose_eval=False)
         return evals_result
+    
+    #############################
 
     def predict(self, X):
         dtest = xgb.DMatrix(X)
         return self.model.predict(dtest)
+    
+    #############################
 
-    def cv(self, X, y, cv=5, scoring='neg_root_mean_squared_error', params=None):
-        if params is None:
-            params = self.params
-        dtrain = xgb.DMatrix(X, label=y)
-        cv_results = xgb.cv(params, dtrain, num_boost_round=params['n_estimators'], nfold=cv, metrics=scoring,
-                            early_stopping_rounds=10, seed=42)
-        return cv_results
+    def loss(self, X, y):
+        y_pred = self.predict(X)
+        if self.binary:
+            y_pred[y_pred>0.5] = 1
+            y_pred[y_pred<=0.5] = 0
+            return accuracy_score(y, y_pred), y_pred
+        else:
 
-    def grid_search(self, X_train, y_train, X_val=None, y_val=None, X_test=None, y_test=None, cv=5, scoring='neg_root_mean_squared_error'):
-        grid_search = GridSearchCV(estimator=xgb.XGBRegressor(**self.params), param_grid=self.param_grid, cv=cv,
-                                   scoring=scoring, refit=True, n_jobs=-1, verbose=1, return_train_score=True)
+            return mean_squared_error(y, self.predict(X)), y_pred
+        
+    #############################
+
+    def grid_search(self, X_train, y_train, X_val=None, y_val=None, X_test=None, y_test=None, cv=5):
+        if self.binary:
+            estimator = xgb.XGBClassifier(**self.params)
+        else:
+            estimator = xgb.XGBRegressor(**self.params)
+
+
+        grid_search = GridSearchCV(estimator=estimator, 
+                                   param_grid=self.param_grid, 
+                                   cv=cv,
+                                   scoring=self.scoring, 
+                                   refit=True, 
+                                   n_jobs=-1, 
+                                   verbose=1, 
+                                   return_train_score=True)
         grid_search.fit(X_train, y_train)
         self.params = grid_search.best_params_
         self.model = grid_search.best_estimator_
@@ -64,15 +99,12 @@ class MyXGB:
 
         # Fit best model and print rmse for train, val, test
         self.fit(X_train, y_train, X_val, y_val, X_test, y_test)
-        y_pred = self.predict(X_train)
-        mse = mean_squared_error(y_train, y_pred)
-        print(f"Train MSE: {mse:.4f}")
+        loss, _ = self.loss(X_train, y_train)
+        print(f"Train Loss: {loss:.4f}")
         if X_val is not None and y_val is not None:
-            y_pred = self.predict(X_val)
-            mse = mean_squared_error(y_val, y_pred)
-            print(f"Val MSE: {mse:.4f}")
+            loss, _ = self.loss(X_val, y_val)
+            print(f"Val Loss: {loss:.4f}")
         if X_test is not None and y_test is not None:
-            y_pred = self.predict(X_test)
-            mse = mean_squared_error(y_test, y_pred)
-            print(f"Test MSE: {mse:.4f}")
+            loss, _ = self.loss(X_test, y_test)
+            print(f"Test Loss: {loss:.4f}")
         return grid_search

@@ -23,9 +23,11 @@ class PullData:
     def get_data(self, 
                  tick_list, 
                  etfs=None,
+                 topics=None,
                  fromdate="2000-01-01", 
                  todate=datetime.datetime.today().strftime("%Y-%m-%d"),
-                 benzinga=True, 
+                 benzinga=True,
+                 finbert=True,
                  yahoo=True, 
                  fred=True,  
                  alpha=True,
@@ -33,52 +35,103 @@ class PullData:
         api_keys = self.get_api_keys()
         fromdate = fromdate
         todate = todate
+
         if target:
             target = Target()
             target.update()
+
         if benzinga:
             Benzinga(tick_list, etfs=etfs, api_keys=api_keys).pull_batch_benzinga(fromdate, todate)
-            for tick in tick_list:
+
+        if finbert:
+            if etfs:
+                benzinga_ticks = tick_list + etfs
+            for tick in benzinga_ticks:
                 try:
-                    fin = FinBert(tick, load=False)
+                    fin = FinBert(tick, 
+                                  load=True,
+                                  input='body',
+                                  max_batch=50)
                     fin.main()
                 except Exception as e:
                     print(f"Failed to get sentiment for {tick} | Reason: {e}")
-        if yahoo: 
-            yahoo = Yahoo(tick_list, etfs, 'daily', api_keys, fromdate, todate)
+
+        if yahoo:
+            yahoo = Yahoo(tick_list, etfs, 'monthly', api_keys, fromdate, todate)
             yahoo.fetch_data()
             yahoo.export_as_csv()
+
         if fred:
             fred = Fredapi(api_keys, fromdate, todate)
             fred.fetch_scrap()
+            fred.fetch_macro_data()
+
         if alpha:
             alpha = Alphavantage(api_keys)
-            alpha.fetch_sentiment_score()
+            alpha.main(topic_list=topics)
 
 # working directory should be the same as this file
 if __name__ == "__main__":
     etl = PullData()
 
-    fromdate = "2010-01-01"
+    fromdate = "2000-01-01"
     todate = datetime.datetime.today().strftime("%Y-%m-%d")
     
+    # tick_list = [
+    #     'NUE', 'STLD', 'LKQ', 'NSC' # stocks
+    #             ]
+    # etfs = [
+    #     'XME', 'PICK', 'REMX', 'DBB', # metal ETFs
+    #     'GLD', 'IAU', 'GDX', 'GDXJ' # gold ETFs
+    # ]
     tick_list = [
-        'NUE', 'STLD', 'LKQ', 'NSC' # stocks
-                ]
-    etfs = [
-        'XME', 'PICK', 'REMX', 'DBB', # metal ETFs
-        'GLD', 'IAU', 'GDX', 'GDXJ' # gold ETFs
+        'NUE',
+        'STLD',
+        'LKQ',
+        'NSC',
+        'CLF',
+        'AA',
+        'VMC',
+        'MLM',
+        'TXI'
     ]
+
+    etfs = [
+        'XME',
+        'PICK',
+        'REMX',
+        'DBB',
+        'GLD',
+        'IAU',
+        'GDX',
+        'GDXJ',
+        'IYM',
+        'XLB',
+        'VAW',
+        'FXZ',
+        'DJP',
+        'IYT'
+    ]
+
+    topics = [
+        'financial_markets',
+        'economy_monetary',
+        'economy_macro',
+        'energy_transportation'
+    ]
+
     etl.update_target()
     etl.get_data(tick_list, 
                  fromdate=fromdate, 
                  todate=todate, 
                  etfs=etfs,
+                 topics=topics,
                  benzinga=False, 
+                 finbert=False,
                  yahoo=False, 
                  fred=False, 
                  alpha=False, 
-                 target=True)
+                 target=False)
     
     pipeline = Preprocess(tick_list)
     pipeline.main()

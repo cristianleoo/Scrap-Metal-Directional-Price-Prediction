@@ -22,7 +22,7 @@ class Alphavantage(ETL):
             return date_string
         
     def range_dates(self, start_date:str):
-        date_range = pd.date_range(start=start_date, end=pd.Timestamp.today(), freq='D')
+        date_range = pd.date_range(start=start_date, end=pd.Timestamp.today(), freq='M')
         date_list = date_range.strftime('%Y-%m-%d').tolist()
         return date_list
     
@@ -71,8 +71,38 @@ class Alphavantage(ETL):
             print("No earnings data found in the response.")
 
     #########################################
+    # Save data
+    def save_data(self, df, ticker=None, topic=None):
+        path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data/alphavantage')
+        if not os.path.exists(path):
+            os.makedirs(path)
+            print(f"Created directory {path}")
+        if ticker:
+            output_file = f'{path}/{ticker}.csv'
+        elif topic:
+            output_file = f'{path}/{topic}.csv'
+        else:
+            output_file = f'{path}/alphavantage.csv'
+            
+        # Open the output file in write mode
+        with open(output_file, 'w', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerow(df.columns)
+
+            # Write the data rows
+            for _, row in df.iterrows():
+                csv_writer.writerow(row)
+
+        print(f"Data has been successfully converted and saved to '{output_file}'.")
+
+    #########################################
     # Sentiment
-    def fetch_sentiment_score(self, start_day:str='2018-01-01', erase=False): #YYYYMMDD format
+    def fetch_sentiment_score(self, 
+                              start_day:str='2010-01-01', #YYYYMMDD format
+                              ticker = None,
+                              topic = None,
+                              erase=False
+                              ): 
         if not erase:
             try:
                 start_day = self.get_last_date()
@@ -83,7 +113,12 @@ class Alphavantage(ETL):
         for date in dates:
             try:
                 #next_date = self.next_date(date)
-                url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&time_from={date.replace("-", "")}T0130&sort=RELEVANCE&apikey={self.api_keys["Alphavantage"]}'
+                if ticker:
+                    url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&time_from={date.replace("-", "")}T0130&sort=RELEVANCE&apikey={self.api_keys["Alphavantage"]}'
+                elif topic:
+                    url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&time_from={date.replace("-", "")}T0130&sort=RELEVANCE&apikey={self.api_keys["Alphavantage"]}'
+                else:
+                    url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&time_from={date.replace("-", "")}T0130&sort=RELEVANCE&apikey={self.api_keys["Alphavantage"]}'
                 r = requests.get(url)
                 data = r.json()
                 extracted_data = []
@@ -122,14 +157,23 @@ class Alphavantage(ETL):
                 print(f"Failed to get sentiment for {date} | Reason: {e}")
                 break
 
-        output_file = f'{os.getcwd()}/data/alphavantage.csv' 
-        # Open the output file in write mode
-        with open(output_file, 'w', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(df.columns)
+        self.save_data(df, ticker, topic)
 
-            # Write the data rows
-            for _, row in df.iterrows():
-                csv_writer.writerow(row)
+    #########################################
+    # Main
+    def main(self, 
+             tick_list=None, 
+             topic_list=None, 
+             erase=False
+             ):
+        if tick_list:
+            for tick in tick_list:
+                # self.fetch_earning_data(tick)
+                self.fetch_sentiment_score(ticker=tick, erase=erase)
+        if topic_list:
+            for topic in topic_list:
+                self.fetch_sentiment_score(topic=topic, erase=erase)
+        if not tick_list and not topic_list:
+            self.fetch_sentiment_score(erase=erase)
 
-        print(f"Data has been successfully converted and saved to '{output_file}'.")
+        

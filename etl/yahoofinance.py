@@ -53,7 +53,7 @@ class Yahoo(ETL):
         etf_data.reset_index(inplace=True, drop=True)
         etf_data["date"] = etf_data["Date"].apply(lambda x: x.strftime("%Y-%m-%d"))
         merged_df = pd.merge(df, etf_data, on="date", how="left")
-        merged_df = merged_df.fillna(method='ffill')
+        # merged_df = merged_df.fillna(method='ffill')
         self.df = merged_df
         return merged_df
     
@@ -64,7 +64,7 @@ class Yahoo(ETL):
             df = yf.download(ticker, start=self.start_day, end=self.end_day)
         df.reset_index(inplace=True)
         df["Date"] = df["Date"].apply(lambda x: x.strftime("%Y-%m-%d"))
-        df.fillna(0, inplace=True)
+        # df.fillna(0, inplace=True)
 
         try:
             df.columns = df.columns.str.lower()
@@ -77,6 +77,12 @@ class Yahoo(ETL):
         df = df[['date', 'close']]
         df.rename(columns={'close': ticker}, inplace=True)
 
+        return df
+    
+    def drop_missing_cols(self, df, threshold=0.2):
+        missing_cols = df.isna().sum() / len(df)
+        missing_cols = missing_cols[missing_cols > threshold].index.tolist()
+        df.drop(missing_cols, axis=1, inplace=True)
         return df
     
     def fetch_data(self) -> pd.DataFrame:
@@ -105,19 +111,11 @@ class Yahoo(ETL):
             else:
                 self.df = pd.merge(self.df, df, on="date", how="left")
         if self.etfs:
-            df = self.add_etfs(df)   
-        df = df.fillna(method='ffill')
+            df = self.add_etfs(self.df)   
+
+        # df = df.fillna(method='ffill')
 
         # df.dropna(how='all', inplace=True)
-        
-        # try:
-        #     df.columns = df.columns.str.lower()
-        #     # use adjusted close price instead of close price
-        #     df["close"] = df["adj close"]
-        #     # drop the adjusted close price column
-        #     df = df.drop(labels="adj close", axis=1)
-        # except NotImplementedError:
-        #     print("the features are not supported currently")
 
         df["date"] = pd.to_datetime(df["date"])
         # convert date to standard string format, easy to filter
@@ -130,7 +128,9 @@ class Yahoo(ETL):
         
         df = df.sort_values(by="Date").reset_index(drop=True)
         df.drop(labels="Date", axis=1, inplace=True)
-        
+
+        df = self.drop_missing_cols(df, threshold=0.2)
+
         self.df = df
         # keep the value of the end of each month
         return df

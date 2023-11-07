@@ -32,7 +32,7 @@ class Target:
             values = self.change(df[df['SeriesID'] == serie]['Value'])
             df.loc[df['SeriesID'] == serie, 'Value'] = values
         df = df.groupby(['Date'])['Value'].sum().reset_index()
-        df['Value'] = round(df['Value'], 4)
+        df['Value'] = round(df['Value']/len(self.series), 4)
         return df
     
     def classify(self, serie):

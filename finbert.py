@@ -6,7 +6,7 @@ import time
 import os
 
 class FinBert:
-    def __init__(self, tickr, max_batch=500, max_length=256, load=True, input='title'):
+    def __init__(self, tickr, max_batch=500, max_length=256, load=False, input='title'):
         self.tickr = tickr
         self.model = BertForSequenceClassification.from_pretrained('yiyanghkust/finbert-tone',num_labels=3)
         self.tokenizer = BertTokenizer.from_pretrained('yiyanghkust/finbert-tone')
@@ -39,10 +39,8 @@ class FinBert:
         return df['created'].iloc[-1]
 
     def get_benzinga(self):
-        try:
-            df = pd.read_csv(f"{os.getcwd()}/benzinga/{self.tickr}.csv")
-        except Exception:
-            df = pd.read_csv(f"{os.getcwd()}/data/benzinga/{self.tickr}.csv")
+        path = os.path.dirname(os.path.abspath(__file__))
+        df = pd.read_csv(f"{path}/data/benzinga/{self.tickr}.csv")
         df = df[['created', self.input]]
         df = df.dropna()
         df = df.reset_index(drop=True)

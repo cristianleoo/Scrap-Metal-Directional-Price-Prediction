@@ -2,14 +2,19 @@ from ingest import Ingest
 from mlmodels.myxgb import MyXGB
 from mlmodels.myrf import MyRF
 from mlmodels.mylgb import MyLGB
-from sklearn.metrics import mean_squared_error
+from mlmodels.mysvc import MySVC
+from mlmodels.mylogreg import MyLogReg
+from mlmodels.mynb import MyNB
+from mlmodels.mycatboost import MyCatBoost
 
     
 class ML(Ingest):
-    def __init__(self, model_name='XGB', *args, **kwargs):
+    def __init__(self, model_name='XGB', binary=False, search='random', *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.model = None
+        self.binary = binary
+        self.search = search
 
     #############################
 
@@ -18,12 +23,21 @@ class ML(Ingest):
             self.split()
         
         if self.model_name=='XGB':
-            self.model = MyXGB()
+            self.model = MyXGB(binary=self.binary)
         elif self.model_name=='Random Forest':
-            self.model = MyRF()
+            self.model = MyRF(binary=self.binary)
         elif self.model_name=='LGB':
-            self.model = MyLGB()
+            self.model = MyLGB(binary=self.binary, search=self.search)
+        elif self.model_name=='SVC':
+            self.model = MySVC(search=self.search)
+        elif self.model_name=='Logistic Regression':
+            self.model = MyLogReg(search=self.search)
+        elif self.model_name=='Naive Bayes':
+            self.model = MyNB(search=self.search)
+        elif self.model_name=='CatBoost':
+            self.model = MyCatBoost(search=self.search)
         X_train, X_val, X_test, y_train, y_val, y_test = self.X_train, self.X_val, self.X_test, self.y_train, self.y_val, self.y_test
+        print(f'Training {self.model_name}...')
         self.model.grid_search(X_train, y_train, X_val, y_val, X_test, y_test)
 
     #############################
@@ -47,11 +61,8 @@ class ML(Ingest):
                 X = self.X_test
                 y = self.y_test
         
-        y_pred = self.model.predict(X)
-        mse = mean_squared_error(y, y_pred)
-        print(f'{code} MSE: {mse:.4f}')
-
-        self.save_loss(mse.round(4), code, self.model_name)
+        loss, y_pred = self.model.loss(X, y)
+        self.save_loss(loss.round(4), code, self.model_name)
 
         return y_pred
     
@@ -63,7 +74,7 @@ class ML(Ingest):
             self.train()
         return self.model.feature_importances_
 
-model = ML(model_name='LGB')
+model = ML(model_name='CatBoost', binary=True, search='random')
 # model.train()
 model.predict('train')
 model.predict('val')

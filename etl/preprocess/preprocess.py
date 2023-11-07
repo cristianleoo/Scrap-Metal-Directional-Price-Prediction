@@ -21,17 +21,19 @@ class Preprocess():
             self.ferrous = pd.read_csv(os.path.join(os.getcwd(), 'data/fred/ferrous.csv'))
         except FileNotFoundError:
             self.ferrous = None
-            print('Macro file not found')
+            print('Ferrous file not found')
 
         try:
             self.non_ferrous = pd.read_csv(os.path.join(os.getcwd(), 'data/fred/non_ferrous.csv'))
         except FileNotFoundError:
             self.non_ferrous = None
+            print('Non Ferrous file not found')
+
+        try:
+            self.macro = pd.read_csv(os.path.join(os.getcwd(), 'data/fred/macro.csv'))
+        except FileNotFoundError:
+            self.macro = None
             print('Macro file not found')
-        # try:
-        #     self.youtube = pd.read_csv(os.path.join(os.getcwd(), 'data','youtube_with_ratings.csv'))
-        # except FileNotFoundError:
-        #     print('YouTube file not found')
 
         # get Yahoo data
         try:
@@ -50,6 +52,12 @@ class Preprocess():
         #     self.earning = pd.read_csv(earning_file)
         # except IndexError:
         #     print(f'Earning file for {self.tick} not found')
+
+    def drop_missing_cols(self, df, threshold=0.2):
+        missing_cols = df.isna().sum() / len(df)
+        missing_cols = missing_cols[missing_cols > threshold].index.tolist()
+        df.drop(missing_cols, axis=1, inplace=True)
+        return df
 
     def clean_benzinga(self):
         self.benzinga = self.benzinga[['created', 'benz_rate']]
@@ -81,20 +89,17 @@ class Preprocess():
 
             except FileNotFoundError:
                 print(f'Finbert file for {tick} not found')
-            
-
-        self.finbert_sentiment.fillna(method='ffill', inplace=True)
-        #self.finbert_sentiment['date'] = pd.to_datetime(self.finbert_sentiment['date'])
         
         self.finbert_sentiment['date'] = self.finbert_sentiment['date'].dt.date
-        self.finbert_sentiment.fillna(method='bfill', inplace=True)
+
+        # self.finbert_sentiment.fillna(method='bfill', inplace=True)
         print('Snapshot of finbert data:')
         print(self.finbert_sentiment.head())
         print(f"Size:{self.finbert_sentiment.shape}")
     
     def clean_stock(self):
         self.stock['date'] = pd.to_datetime(self.stock['date']).dt.date
-        self.stock.fillna(method='ffill', inplace=True)
+        # self.stock.fillna(method='ffill', inplace=True)
 
         zero_rows = set(np.where(self.stock.iloc[:10, 4:20] == 0)[0].tolist())
         inf_rows = set(np.where(np.isinf(self.stock.iloc[:, 4:20]))[0].tolist())
@@ -111,6 +116,8 @@ class Preprocess():
         fred = pd.merge(self.ferrous, self.non_ferrous, on='date', how='left', suffixes=('_ferrous', '_non_ferrous'))
         fred['date'] = pd.to_datetime(fred['date'])
         fred = fred.resample('M', on='date').last().reset_index()
+        self.macro['date'] = pd.to_datetime(self.macro['date'])
+        fred = pd.merge(fred, self.macro, on='date', how='left')
         fred['date'] = fred['date'].dt.date
         self.fred = fred
         print('Snapshot of macro data:')
@@ -124,24 +131,25 @@ class Preprocess():
             self.combination = pd.merge(self.combination, self.benzinga, on='date', how='left')
             # Fill NA values using backward fill method for dates when market is closed
             columns_to_fill = [col for col in self.stock.columns if col not in ['date', 'benz_rate']]
-            self.combination[columns_to_fill] = self.combination[columns_to_fill].fillna(method='bfill')
+            # self.combination[columns_to_fill] = self.combination[columns_to_fill].fillna(method='bfill')
             # # Fill NA values using forward fill method for dates when no news created when market is open
-            self.combination['benz_rate'] = self.combination['benz_rate'].fillna(method='ffill')
+            # self.combination['benz_rate'] = self.combination['benz_rate'].fillna(method='ffill')
             self.combination['benz_rate'] = self.combination.groupby(['close', 'volume', 'day'])['benz_rate'].transform('mean')
             self.combination['benz_rate'] = self.combination['benz_rate'].round(3)
 
         if self.finbert_sentiment is not None:
             self.combination = pd.merge(self.combination, self.finbert_sentiment, on='date', how='left')
-        self.combination.fillna(method='ffill', inplace=True)
-        self.combination.fillna(method='bfill', inplace=True)
 
-        try:
-            self.combination.drop(['GDXJ_x', 'GDXJ_y'], axis=1, inplace=True)
-        except KeyError:
-            pass
+        cols_failure = ['GDXJ_x', 'GDXJ_y', 'IYT_y']
+        for col in cols_failure:
+            try:
+                self.combination.drop(col, axis=1, inplace=True)
+            except KeyError:
+                pass
 
         self.target['date'] = pd.to_datetime(self.target['date']).dt.date
         self.combination = pd.merge(self.combination, self.target, on='date', how='inner')
+        self.combination = self.drop_missing_cols(self.combination, threshold=0.2)
         print(self.combination.head())
 
     def export_to_csv(self):

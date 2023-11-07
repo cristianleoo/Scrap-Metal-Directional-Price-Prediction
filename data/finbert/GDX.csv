@@ -1,315 +1,619 @@
-created,title,sentiment
-2009-09-02,Gold Mining Stocks Glisten on a Mixed Tape,0
-2009-09-02,"Gold (GLD) Breaking Out of a Narrow Triangle on Charts, Silver (SLV) Continues Strong",0
-2009-09-03,Gold and Gold Miners Soar for a Second Straight Day,1
-2009-09-08,"U.S. Gold Futures Hit 6-Month High (ABX, KGC, AUY, GLD)",1
-2009-09-09,Tim Seymour Suggests Shorting Gold Miners (GDX),0
-2009-09-11,"Gold Close to All Time Highs Near $1,010/ounce (GLD, GDX, ABX)",0
-2009-09-16,Gold Miners ETF (GDX) Poised for Another Strong Day,0
-2009-09-18,"Should Silver Be A Part of An Inflation Hedge? (GDX, GLD, SLV, SIVR)",0
-2009-09-23,"Commodities and Oil Down Today (USO, IEZ, GDX, UUP)",0
-2009-09-24,"6 Different ETFs For A Weakening US Dollar (IEZ, DRW, GDX, SIVR, UDN, EEM)",0
-2009-10-06,"Markets Push Well Higher On Weak Dollar & Higher Commodities (GLD, GDX, IEZ, SPY, UUP)",0
-2009-10-13,"Another Day; Another Fresh All-Time High For Gold (GLD, GDX)",0
-2009-10-19,The Week That Was - Week ending 16-Oct-09,0
-2009-10-27,"ETFs For Tuesday Oct, 27, 2009",1
-2009-10-27,"5 Day Dollar Bounce Hurting Commodities, Gold, and Equities (GDX, UUP, CRBQ)",0
-2009-10-28,"Playing The Gold / Gold Miner Valuation Differential Trade (GDX, GLD)",0
-2009-10-29,"ETFs For Thursday October 29, 2009",0
-2009-10-30,"ETFs For Friday October 30, 2009",0
-2009-11-04,"The Top ETF Gainers Today (AGQ, GDX, GLD, EDC, EFO, IYT)",2
-2009-11-04,"A Gold Star For Goldcorp's Earnings, ETF Play: (GDX)",2
-2009-11-09,Gold Rises Behind Weakening Dollar,0
-2009-11-10,"Commodity ETF Prices Declined After G20 meeting (SLV, SLX, GLD, GDX)",0
-2009-11-10,New Gold Mining Slated To Begin Trading On Nov. 11 (GDXJ),0
-2009-11-10,"ETFs To Watch On November 10, 2009 (HHH, GLD, EWA, EWZ, UYG)",0
-2009-11-10,"Stocks Slip Slightly As Effects OF G20 Meeting Settle Down  (DFT, BA, MMM, GLD, GDX)",1
-2009-11-11,Well-Timed Launch For New Junior Gold ETF: GDXJ,0
-2009-11-12,Little Brother In Focus: Market Vector Junior Miners ETF ,0
-2009-11-16,"ETFs To Watch November 16, 2009 (EWJ, IYT, GDX, UDN, XLP)",0
-2009-11-16,"Gold Reaches Record Highs As Dollar Weakens (GLD, GDX, GOLD, NEM)",0
-2009-11-19,John Paulson Set to Launch Gold (GLD) Hedge Fund,0
-2009-11-23,"As Gold Touches A Record, (GLD) and (GDX) Are Up",0
-2009-11-24,"Gold Continues Its Run (NEM, GLD, GDX, KGC, ABX)",0
-2009-11-24,"Gold Rush Exhausts Storage Space, GLD, GDX, KGC, AUY, GG ",0
-2009-11-25,"Gold Miners Up, ETFs (GLD, GDX) Follow Suit",2
-2009-11-27,"Gold Rush For Retail Investors: American Eagle Goes Out Of Inventory, GLD, GDX",0
-2009-12-04,"Gold Futures Dropped Behind Positive Jobs Data (GLD, GDX, GOLD, NEM, FCX) ",0
-2009-12-04,Jim Rogers – Gold Price Rise Due To Budget Deficits,0
-2009-12-07,"ETFs To Watch December 7, 2009 (MNA, KRE, UUP, EWA, FXY)",0
-2009-12-08,"Meredith Whitney Maintains Her Bearish Stance (XLF, SPY, GLD, GDX)",0
-2009-12-09,"ETFs To Watch December 9, 2009 (DOG, SKF, GUR, EMU, EZA)",0
-2009-12-10,"James Altucher's Top 10 Picks (AGO, WCG, POT, CSH, BDX)",0
-2009-12-10,"Gold To Keep Shining, (SPY, GDX, GLD)",0
-2009-12-16,"ETFs To Watch December 16, 2009 (EWO, GDX, GAZ, FXP)",1
-2009-12-16,"ETFs Sector Performance (UHN, GDX, KIE)",2
-2009-12-16,"Hedge Against Gold Exposure With Inverse Gold ETFs (DGZ, DZZ, GLL, GDX)",2
-2009-12-17,Gold Price Declines 1% In Europe Following The Fed’s Optimism On Economy,0
-2009-12-18,"Benzinga's Top ETF Gainers (DGP, UCO, QLD, GDX)",0
-2009-12-22,Overview Of David Einhorn's Greenlight Capital,0
-2009-12-22,"Gold Trades Near Six-Week Low (GLD,GDX)",2
-2009-12-28,Doug Kass Thinks Gold Will Break $900 (GLD),0
-2009-12-30,"Healthy Markets Have Corrections. (NYSE: FNM, FRE, C, WFC, GS)",1
-2009-12-30,"Marc Faber Does Not See Gold Rallying In 2010 (GLD, GDX)",0
-2010-01-04,"Commodity And Oil Prices Higher In 2010, Shares Move Up (FCX, AKS, GLD, GDX, CAL, AMR, DAL)",0
-2010-01-04,"Gold Gains Traction (GLD, GDX, IAG, NEM, ABX)",0
-2010-01-06,"Gold Prices Rise As Euro Recovers, (GDX, GLD)",0
-2010-01-07,"Gold Finishes Lower After Pressure from the Dollar (ABX, GOLD, GLD, GDX)",1
-2010-01-08,"Weak Job Data Pulls Down Stock Markets (KO, BA, JPM, IAG, GDX, GLD)",0
-2010-01-12,Will Gold Maintain Its Luster And Continue Stellar Performance In 2010?,0
-2010-01-22,"ETFs To Watch January 22, 2010 (FDN, GDX, SMN, FAZ)",0
-2010-01-26,"Oh, it's still all about the dollar ",1
-2010-02-08,"ETFs To Watch February 8, 2010 (IYR, ZSL, FXE, EWJ)",1
-2010-02-08,"Benzinga's Top ETF Decliners (FAS, GDX, URE, TAN)",1
-2010-02-09,China Investment Corp. Holds Stakes In 3 Other U.S. ETFs,1
-2010-02-09,"Hedging With Gold Miners (AEM, GFI, NGD, DGL)",1
-2010-02-12,"ETFs To Watch February 12, 2010 (EZA, BGZ, EWG, GDX)",0
-2010-02-12,"Bernanke, Geithner, and Mr. Market All Say Buy Gold Now (GLD, GDX)",0
-2010-02-16,The Only Chart That Matters,1
-2010-02-18,The Only Chart That Matters  (NYSE:UUP) (NYSE:UDN) (NYSE:CLF) (NYSE:GLD) (NYSE:USO),0
-2010-02-19,"Strong Dollar Weakens Gold, And Crude Oil Prices (GDX, GLD, SCO, DBO)",0
-2010-02-19,Peter Schiff Likes Gold ,0
-2010-02-24,"ETFs To Watch February 24, 2010 (EEV, GDX, XLE, TZA)",0
-2010-02-24,"Fast Money Picks For February 25th (MHS, CVS, AKAM) ",0
-2010-02-25,The Dollar Holds All The Cards ,0
-2010-02-26,"ETFs To Watch February 26, 2010 (TBT, SCO, EUO, GDX)",2
-2010-03-01,"The El Dorado; Barron’s (GLD, GDX)",0
-2010-03-03,"Gold Rises As Euro Gains Against the Dollar (GLD, GDX) ",2
-2010-03-05,"Gold Expected To Fall As Dollar Gains (GLD, GDX)",0
-2010-03-09,"ETFs To Watch March 9, 2010 (XLK, GDX, TUR, DAG)",2
-2010-03-10,"Wednesday March 10th ETF Movers: FBT, GDX",2
-2010-03-16,"Tuesday March 16th ETF Movers: GDX, FBT",2
-2010-03-17,"ETFs To Watch March 17, 2010 (FXC, THD, SMH, USO)",0
-2010-03-18,Is The SPDR Gold ETF The Reason Behind The Massive Rally In Gold?,1
-2010-03-19,PLTM and CU: New First Trust ETFs Not Physically Backed,0
-2010-03-22,Increased Global Demand Will Support The Price Of Gold ETFs,0
-2010-03-24,"Wednesday March 24th ETF Movers: KIE, GDX",0
-2010-03-25,"ETFs To Watch March 25, 2010 (BRF, DTO, XRT, EUO)",0
-2010-03-25,Does Investing In The Platinum ETF Make More Sense Than A Gold ETF?,1
-2010-03-26,Further Political Disruptions Around The World Will Push Gold ETF Prices Higher,0
-2010-03-26,"Gold Up For A Second Consecutive Day (GDX, GLD)",0
-2010-03-28,"ETF Investors Will Look To Buy Gold And Tech As The Next Market Correction Nears (GLD, QQQQ, SPY, GDX)",0
-2010-03-29,The Market Vectors Gold Miners ETF (GDX) Appears To Be In A Buying Range,0
-2010-03-30,"Tuesday March 30th ETF Movers: ENY, GDX",0
-2010-03-31,Investor Demand Shifts From Gold To Platinum ETFs,0
-2010-04-05,"Gold ETF News: After 30% Gain in Past Year, Where Next for Gold?",1
-2010-04-06,"Gold Falls As Dollar Strengthens (GLD, GDX)",1
-2010-04-07,"Gold Helds On To Tuesday’s Gain (GLD, GDX)",0
-2010-04-07,"Wednesday April 7th ETF Movers: GDX, IPD",0
-2010-04-08,"ETFs To Watch April 8, 2010 (GLD, SRS, RSX, XLE)",0
-2010-04-13,"ETFs To Watch April 13, 2010 (IYT, SMH, UUP, EDC)",0
-2010-04-26,"ETFs To Watch April 26, 2010 (EWD, XME, IEO, FAA)",0
-2010-04-26,"Investing In Gold Through The Gold Miners ETFs (GDX, GDXJ)",1
-2010-04-28,"Wednesday, April 28th ETF Movers: GDX, ROB, SGG, EWP, PALL",0
-2010-04-29,Consider Selling A Put Spread On The SPDR Gold ETF (NYSE:GLD) To Take Advantage Of A Continued Rise In Gold,0
-2010-04-29,"ETFs to Watch April 29, 2010 (XLP, EWP, PSAU, XLE)",0
-2010-05-06,Selling Frenzy In The Stock Market Driving Up Gold!!,0
-2010-05-07,"ETFs To Watch May 7, 2010 (EDZ, REC, GLD, TLT)",0
-2010-05-10,The Gold Miners ETF (GDX) Appears To Be In A Buying Range,0
-2010-05-11,Gold Beats December 3 Record Peak High As Rally In Higher Risk Assets Loses Heat,0
-2010-05-11,"Tuesday, May 11th ETF Movers: GDX, KOL, SLV, TAN, EWP, DBB",0
-2010-05-11,Is It Time To Take Profits In The Gold Miners ETF? (GDX),2
-2010-05-11,"Gold & Gold Miners Ripping Higher; GLD, GDX",0
-2010-05-12,"ETFs To Watch May 12, 2010 (EPV, FXB, PALL, SLV)",0
-2010-05-12,Gold Hits Record High,0
-2010-05-12,Another Way To Play Gold's Ascent,1
-2010-05-13,Tapping Into Other Miners,0
-2010-05-19,Mike Khouw Recommends An Option Strategy In GDX,0
-2010-05-20,A Small-Cap ETF – A Big Idea for Gold Bugs (GDXJ),2
-2010-05-26,"ETFs To Watch May 26, 2010 (EWY, TBT, FXE, INDY)",0
-2010-05-31,Deutsche Bank Sees Gold At $1600 In 2012,0
-2010-06-01,Gold Miners ETF May Be Primed For Shorting,1
-2010-06-01,"Benzinga's ETF Gainers (ERY, AGQ, DUG, GDX)",1
-2010-06-07,"Benzinga's Top ETF Gainers (AGQ, DRN, SLV, GDX)",1
-2010-06-08,"ETFs To Watch June 8, 2010 (GDX, XLK, SRTY, ERY)",0
-2010-06-14,Analysis On The Gold Miners ETF (GDX) Using The True Strength Index Indicator,0
-2010-06-15,"ETFs To Watch June 15, 2010 (XLE, VNM, EUO, MOO)",0
-2010-06-17,"Benzinga's Top ETF Gainers (UNG, AGQ, GDX, DGP)",2
-2010-06-17,"Thursday, June 17th ETF Movers: (UNG, SGG, GDX, ITB)",1
-2010-06-18,"Scott Redler Sees Gold At $1,500 Per Ounce",1
-2010-06-18,"Time To Buy Gold? Peter Schiff Thinks Gold Could Hit $5,000 (GLD, GDX, ABX, GOLD, PHYS)",1
-2010-06-18,"True Strength Index Momentum With These Gold ETFs (GDX, GDXJ, GLD)",0
-2010-06-18,"ETFs To Watch June 18, 2010 (EPI, UGL, FXF, SLX)",1
-2010-06-22,Two ETFs for Any Season,0
-2010-06-27,"Will Past Results Repeat In July 2010 For These Precious Metal ETFs (GLD, SLV, GDX, GDXJ)",1
-2010-06-28,Last Week In Review,0
-2010-06-29,"Dennis Gartman Explains The Action In Gold (GLD, GDX, GDXJ)",0
-2010-06-30,Turn To What Is Working Like The Market Vectors Gold Miners ETF (GDX),0
-2010-07-01,Dollar Bull Still Has No Mo-Jo Ahead of June NFP report,0
-2010-07-01,Gold’s Double Top in June 2010 Ain’t Working So Well,0
-2010-07-02,"ETFs To Watch July 2, 2010 (GLD, FXE, TAN, EPI)",1
-2010-07-19,"Dennis Gartman: I Was Wrong On Gold (GLD, UGL, GDX)",0
-2010-07-19, Gold Holds Many Keys for the Markets Worldwide ,0
-2010-07-23,Upside Seen For The Gold Miners ETF (NYSE:GDX) To It’s Triple Top Level,0
-2010-07-27,Gold Miners Near Attractive Levels,2
-2010-07-27,"Benzinga's Top ETF Decliners (AGQ, UCO, DGP, GDX, XHB)",0
-2010-07-27,"Small-Caps, Mid-Caps, & Commodities Hitting 200 MA Resistance 07-27-2010",0
-2010-07-28,"ETFs To Watch July 28, 2010 (PPA, EUO, ZSL, MXI)",0
-2010-08-03,"Gold Miners ETF Redemptions Rise (NYSE:GLD), (NYSE:GDX)",0
-2010-08-06,Preparing Your Portfolio for Inflation,0
-2010-08-10,"Joe Terranova Is Bullish On Gold (GDX, GDXJ, IAU, GLD)",0
-2010-08-10,"The Gold Miners ETF Long Term Chart Looks Very Bullish (GDX, GDXJ)",1
-2010-08-12,"How Are Those Gold Stocks Doing? (GDX, GOLD, EGO)",0
-2010-08-13,"ETFs To Watch August 13, 2010 (MXI, FXE, QLD, EPI)",1
-2010-08-13,"Gold ETFs: $2,000 Gold In Next 3-5 Years (GDX)",1
-2010-08-16,The Gold ETF Train Is Gathering Steam Again (NYSE:GLD),0
-2010-08-17,"ETFs To Watch August 17, 2010 (GLD",0
-2010-08-19,Not All Commodity ETFs Are Created Equal,0
-2010-08-25,Gold Miners Start Strong. Watch These Levels. ,0
-2010-08-26,"ETFs To Watch August 26, 2010 (EUO, SLV, EDZ, GDX)",0
-2010-08-26,Spinning Synthetic Gold (NYSE:GLD),0
-2010-08-30,Stock up on gold miners,2
-2010-08-30,Gold Miners On Verge Of Major Breakout (GDX),0
-2010-08-31,"Gold In A Potential Coil Formation (GLD, SLV)",2
-2010-09-02,Gold Rushing on Into Autumn,0
-2010-09-03,"ETFs To Watch September 3, 2010 (CZM, HAO, XLY, XHB)",1
-2010-09-03,A Better Way To Trade Gold? (GDX),0
-2010-09-07,"Can Gold Continue it's Ride Up or is a Correction Inevitable? (GLD, SLV, UDN)",0
-2010-09-09,"Beating The Heat In The Gold Miners ETF Market (GDX, GDXJ)",2
-2010-09-14,Stealth Rally,0
-2010-09-14,Yesterday's Niggling Gold Clue (NYSE:GLD),0
-2010-09-15,"ETFs To Watch September 15, 2010 (SOXL, THD, SIL, TBT)",0
-2010-09-16,What Yen Intervention Means For Gold (NYSE:GLD),0
-2010-09-20,Treasuries Breaks Long Term Trend As Precious Metals Continue To Move Higher,0
-2010-09-21,Stock Market Steals Some Thunder From The Gold ETF (NYSE:GLD),0
-2010-09-23,Take A Half Position In The Gold Miners ETF Now (GDX),0
-2010-09-27,Bond & Equity Markets Realigning  09-27-2010,0
-2010-09-28,Frank Holmes: Gold Absolutely Still a Buy,1
-2010-09-28,"Government Almost Forcing Investors to Buy Everything (SPY, LQD, IEF, GDX, VNQ, CRBQ)",1
-2010-09-29,"ETFs To Watch September 29, 2010 (DIG, FXF, TUR, SOXL)",0
-2010-09-30,September To Remember,0
-2010-10-05,"Gold Settles At New Nominal High…Again. (GLD, GDX, UUP)",1
-2010-10-06,Miners Keep On Chugging,0
-2010-10-07,"Gold Miners: Taking A Peak Under The Hood (GDX, GDXJ)",2
-2010-10-12,Goldman's Golden Gold Forecast Should Benefit These ETFs,0
-2010-10-14,Out-of-Control Gold Meets Leveraged ETN and ETF Products ,0
-2010-10-15,Don't Forget About This Mining ETF,0
-2010-10-15,Long-Term Inflation Fighters  10-15-2010,0
-2010-10-18,"Peter Schiff Says No Bubble In Gold (GLD, GDX)",1
-2010-10-19,"For Gold Stocks, It's All Relative (NYSE:GDX)",0
-2010-10-20,"ETFs To Watch October 20, 2010 (BZQ, MOO, SKF, UUP)",0
-2010-10-22,"ETFs To Watch October 22, 2010 (CZI, TMV, XLY, MTK)",1
-2010-10-28,"Benzinga's Top ETF Gainers (GAZ, UNG, AGQ, GDX, DRV)",1
-2010-10-28,Thursday's ETF To Watch: Gold Miners ETF (GDX),0
-2010-10-29,"ETFs To Watch October 29, 2010 (CYB, INDL, UNG, DRV)",0
-2010-11-09,"What's The Miners Ratio Telling Us? (GDX, GDXJ, ABX, GG, SMF, NG)",0
-2010-11-11,"ETFs To Watch November 11, 2010 (ZSL, TUR, FXB, BIV)",0
-2010-11-16,November Rain: Nothing But Pain For These ETFs This Month,0
-2010-11-18,John Paulson's High-Performance Gold Strategy ,0
-2010-11-20,Why I Still Hate Gold,0
-2010-11-21,Dion's Weekly ETF Blog Wrap,0
-2010-12-03,Dion's Friday ETF Winners and Losers,0
-2010-12-07,U.S. Dollar Comeback Halts Market Rally - Voice of the People,0
-2010-12-07,Copper ETF: What's The Big Deal?,2
-2010-12-07,U.S. Dollar Comeback Halts Market Rally,0
-2010-12-08,'Fast Money' Recap: Market Rotation,0
-2010-12-08,Direxion To Introduce Leveraged Gold Miners ETFs,0
-2010-12-10,Direxion Adds Leverage To Market Vectors Gold Miners (GDX),0
-2010-12-11,5 ETFs to Watch,0
-2010-12-15,ETF Gift Ideas for the Holidays,2
-2010-12-15,"Jim Rogers: $2,000 Gold, $50 Silver",0
-2010-12-16,Mining Stocks Face Short Term Pressure ,0
-2010-12-16,Eleven For '11: Sector ETFs To Watch In The New Year,0
-2010-12-16,Mining Stocks Face Short-Term Pressure - Voice of the People,0
-2010-12-22,Craig Effron and Curtis Schenker: Scoggin Capital Management,0
-2010-12-22,The Secular Trends Provide Generational Profits (GDX),0
-2010-12-29,"ETFs To Watch December 29, 2010 (REMX, THD, SIL, TBT)",2
-2011-01-04,Gold Miners Under Pressure,0
-2011-01-05,"Whatever Happened to $1,500 Gold? (GDX)",0
-2011-01-07,"ETFs To Watch January 7, 2011 (EUO, GDX, URA, EPI)",2
-2011-01-09,Scott Nations Suggests A Put Calendar In Market Vectors Gold Miners ETF (GDX) ,0
-2011-01-21,"ETFs To Watch January 21, 2011 (BZQ, GDX, EWP, YCS)",0
-2011-01-28,Why a Gold Correction is Great News ,0
-2011-01-30,"ETFs To Watch January 31, 2011 (EUO, VXX, GDX, EGPT)",0
-2011-02-07,Gold Miners ETF(GDX) Holds Steady. Watch These Levels.,0
-2011-02-07,"Fast Money Picks For February 8th (VALE, CBE, EBAY, TCK)",0
-2011-02-09,"ETFs To Watch February 9, 2011 (CYB, SIL, RSX, CORN)",1
-2011-02-14,Gold Miners Pullback,0
-2011-02-16,"ETFs To Watch February 16, 2011 (AMJ, NUGT, ECH, TLT)",0
-2011-02-21,WaveStrength PowerSignal Calls Pop in Gold Prices (GDX),0
-2011-02-22,"BTDStocks.com Tuesday, February 22, 2011 End-of-Day Update",0
-2011-02-24,A Forgotten ETF For Gold's Rebound,1
-2011-02-28,Five Commodities ETFs For Q2 and Beyond,0
-2011-03-03,"Ray Dalio: 2011 Is A Sweet Spot, 2012 Much Harder (GLD, GG, ABX, GDX)",0
-2011-03-17,Global X Distills A Pure Gold Miners ETF,0
-2011-03-23,"Benzinga's Top ETF Gainers, March 23rd (GAZ, SIL, CU, GDX)",2
-2011-03-23,"ETFs To Watch March 24, 2011 (YCS, SDY, UYM, EEV)",0
-2011-04-02,ETF Showdown: This One's For Goldfinger,0
-2011-04-04,Gold Miners Strike Early,0
-2011-04-18,"Market Decline Equals A Chance To Add Gold Miners (GDX, GDXJ, GLDX, PSAU)",0
-2011-04-18,Silver And Gold Continue Explosive Rally As S&P Downgrades U.S. Debt,2
-2011-04-20,Mining Stocks Are Still Lagging The Precious Metals,2
-2011-04-21,"CEOWORLD Top Commodities Stocks- DE, MON, POT, PCL, LPX, WY, GLD, SLV and MAS",1
-2011-05-02,"ETFs To Watch May 3, 2011 (XLU, EPI, ZSL, UDN)",0
-2011-05-06,Take Advantage Of Dips In Precious Metals and Miners,2
-2011-05-10,Market Vectors Indonesia ETF Reaches $500M AUM,2
-2011-05-11,Dollar Runs As Metals And Other Currencies Stumble,0
-2011-05-18,Dollars of Future Passed...,1
-2011-05-20,Is Volatility Back?  05-20-2011,2
-2011-05-25,No Longer Just Crazy Talk: UN Warns the Dollar Could Collapse,2
-2011-05-26,Direxion Unveils +/- 3x Versions of Market Vectors Agribusiness and Russia ETFs,0
-2011-05-27,A Look Ahead: Next Week's ETFs To Watch,0
-2011-05-31,Nine Investments that Might Pull a Jim Tressel,0
-2011-06-02,Five Inverse ETFs Your Broker Forgot To Mention,1
-2011-06-13,"ETFs To Watch June 14, 2011 (DBV, FAZ, EUM, XLP)",0
-2011-06-13,Liquidity Crisis Intensifies Mining Stock Sell-off,0
-2011-06-20,Dip Buying? Try These Five ETFs,0
-2011-06-29,A Look At Blue Ridge Capital's Big Bets ,0
-2011-07-06,Gold and Silver: Short Term Pullback In Secular Uptrend,1
-2011-07-07,TLT Forms Narrow Range,0
-2011-07-08,Check Out The Chart: Signs Of Life For This Mining ETF,0
-2011-07-12,"ETFs To Watch July 13, 2011 (UCO, TYP, EWT, FXF)",2
-2011-07-13,"ETFs To Watch July 14, 2011 ",1
-2011-07-13,Gold Companies Lagging Gold - Big Time,0
-2011-07-14,Five Mining ETFs Your Broker Forgot To Mention,0
-2011-07-18,"Gold Miners Soar, Are They Extended?",0
-2011-07-19,"How To Play $2,500 Gold",0
-2011-07-20,Buy Gold Dips Because U.S. Politicians Are Ugly Actors,0
-2011-07-21,How To Play A 20% Rise In Gold In 3 Months,0
-2011-07-29,Moody's Thinking About Screwing With Spain Next,0
-2011-07-29,"Hello Darkness, My Old Friend",0
-2011-07-29,"ETFs To Watch July 29, 2011",0
-2011-08-01,"ETFs To Watch August 2, 2011",0
-2011-08-01,Manufacturing Growth Hits 2-Year Low,0
-2011-08-02,Gold Miners Still Lag the Metal,0
-2011-08-02,"Hey Ben, Gold Is Money Whether You Like It Or Not",0
-2011-08-02,"Short USD, Short EUR, But Buy Gold, Equities, Cigs, and Whiskey",0
-2011-08-02,"Auto, Truck Sales Data Due Out at 3 pm Eastern",1
-2011-08-08,"Gold Takes Out $1,700 and Keeps Going Up in Asia",0
-2011-08-08,Are Shares Of Gold Miners A Steal At These Levels?,0
-2011-08-10,"Why Gold Is Going To $2,000 An Ounce By The End Of August",0
-2011-08-10,"ETFs To Watch August 10, 2011",0
-2011-08-11,"Gold Down, Gold Miners Up",0
-2011-08-22,Don't Forget About This Gold Miners ETF,0
-2011-08-23,"ETFs To Watch August 23, 2011 ",0
-2011-08-23,Gold Miners Retreat,1
-2011-08-24,Moody's Remix  08-24-2011,0
-2011-08-24,A Value Investor's Gold Stock Shopping List,1
-2011-08-31,Gold Is Still the Best Safe Haven We Have,0
-2011-09-06,Gold Miners Jump Out Of the Gate,0
-2011-09-06,"Buy Gold, Silver, and Avoid the Miners",0
-2011-09-08,Check Out The Chart: Junior Gold Miners Looking Bullish,0
-2011-09-09,"ETFs To Watch September 9, 2011",1
-2011-09-12,"Gold Dips, However, It Is Still The Golden Investment",1
-2011-09-21,Time to Buy Junior Gold Stocks (GDXJ),0
-2011-09-21,GDX Has Given Us a Nice Secondary Buy Point,1
-2011-09-27,Precious Metals Shine Early,0
-2011-09-29,"It's End-of-the-Month, Take Out the Garbage  09-29-2011",1
-2011-10-07,Mind The Gap: 5 ETFs With Technical Gaps to Fill,1
-2011-10-10,Five Critical ETFs For Earnings Season,0
-2011-10-13,"Gold Miners Dip, What Does This Mean?",0
-2011-10-27,"ETFs to Watch October 28, 2011",1
-2011-11-07,"ETFs to Watch November 8, 2011",1
-2011-11-08,David Einhorn's Letter Perfumed With Success,0
-2011-11-08,Bigger Isn't Always Better With ETFs: Part II,0
-2011-11-13,"ETFs to Watch November 14, 2011",2
-2011-11-14,Gold Producers Lead while Developers and Explorers Lag,1
-2011-11-14,What Is Gold Telling Us Today?,2
-2011-11-21,iShares Files for a Slew of New ETFs,0
-2011-11-22,"ETFs to Watch November 23, 2011",2
-2011-11-23,Five ETF Rivalries to Watch in 2012,1
-2011-11-30,Twelve For '12: Commodities ETFs to Watch In The New Year,2
-2011-12-05,"ETFs to Watch December 5, 2011",0
-2011-12-06,Why Gold Stocks Have Underperformed and What Lies Ahead,2
-2011-12-07,Twelve For '12: Sector ETFs to Watch In The New Year ,2
-2011-12-13,How to Profit from ManpowerGroup's Positive Jobs Report,0
+created,sentiment
+2009-09-02,1
+2009-09-03,2
+2009-09-08,1
+2009-09-09,1
+2009-09-11,1
+2009-09-16,1
+2009-09-18,0
+2009-09-23,0
+2009-09-24,1
+2009-10-06,0
+2009-10-13,0
+2009-10-19,2
+2009-10-27,2
+2009-10-28,0
+2009-10-29,0
+2009-10-30,1
+2009-11-04,1
+2009-11-09,1
+2009-11-10,2
+2009-11-11,0
+2009-11-12,2
+2009-11-16,2
+2009-11-19,1
+2009-11-23,1
+2009-11-24,1
+2009-11-25,2
+2009-11-27,2
+2009-12-04,0
+2009-12-07,2
+2009-12-08,2
+2009-12-09,0
+2009-12-10,1
+2009-12-16,0
+2009-12-17,1
+2009-12-18,0
+2009-12-22,0
+2009-12-28,1
+2009-12-30,1
+2010-01-04,1
+2010-01-06,1
+2010-01-07,2
+2010-01-08,1
+2010-01-12,2
+2010-01-22,1
+2010-01-26,0
+2010-02-08,2
+2010-02-09,1
+2010-02-12,0
+2010-02-16,2
+2010-02-18,1
+2010-02-19,1
+2010-02-24,1
+2010-02-25,0
+2010-02-26,1
+2010-03-01,2
+2010-03-03,1
+2010-03-05,1
+2010-03-09,1
+2010-03-10,1
+2010-03-16,1
+2010-03-17,0
+2010-03-18,2
+2010-03-19,0
+2010-03-22,0
+2010-03-24,0
+2010-03-25,1
+2010-03-26,0
+2010-03-28,0
+2010-03-29,1
+2010-03-30,2
+2010-03-31,1
+2010-04-05,1
+2010-04-06,1
+2010-04-07,1
+2010-04-08,1
+2010-04-13,0
+2010-04-26,1
+2010-04-28,1
+2010-04-29,2
+2010-05-06,0
+2010-05-07,1
+2010-05-10,1
+2010-05-11,0
+2010-05-12,0
+2010-05-13,2
+2010-05-19,0
+2010-05-20,1
+2010-05-26,1
+2010-05-31,0
+2010-06-01,0
+2010-06-07,1
+2010-06-08,1
+2010-06-14,0
+2010-06-15,0
+2010-06-17,1
+2010-06-18,0
+2010-06-22,0
+2010-06-27,0
+2010-06-28,2
+2010-06-29,2
+2010-06-30,0
+2010-07-01,0
+2010-07-02,2
+2010-07-19,1
+2010-07-23,0
+2010-07-27,1
+2010-07-28,0
+2010-08-03,1
+2010-08-06,0
+2010-08-10,1
+2010-08-12,0
+2010-08-13,1
+2010-08-16,0
+2010-08-17,1
+2010-08-19,2
+2010-08-25,1
+2010-08-26,1
+2010-08-30,0
+2010-08-31,0
+2010-09-02,0
+2010-09-03,0
+2010-09-07,0
+2010-09-09,0
+2010-09-14,2
+2010-09-15,1
+2010-09-16,1
+2010-09-20,0
+2010-09-21,1
+2010-09-23,1
+2010-09-27,0
+2010-09-28,0
+2010-09-29,0
+2010-09-30,1
+2010-10-05,0
+2010-10-06,0
+2010-10-07,1
+2010-10-12,1
+2010-10-14,1
+2010-10-15,1
+2010-10-18,0
+2010-10-19,0
+2010-10-20,1
+2010-10-22,1
+2010-10-28,2
+2010-10-29,1
+2010-11-09,0
+2010-11-11,1
+2010-11-16,1
+2010-11-18,0
+2010-11-20,0
+2010-11-21,0
+2010-12-03,0
+2010-12-07,0
+2010-12-08,2
+2010-12-10,0
+2010-12-11,0
+2010-12-15,0
+2010-12-16,0
+2010-12-22,0
+2010-12-29,1
+2011-01-04,1
+2011-01-05,1
+2011-01-07,0
+2011-01-09,0
+2011-01-21,2
+2011-01-28,0
+2011-01-30,0
+2011-02-07,0
+2011-02-09,1
+2011-02-14,0
+2011-02-16,0
+2011-02-21,1
+2011-02-22,1
+2011-02-24,2
+2011-02-28,1
+2011-03-03,0
+2011-03-17,0
+2011-03-23,1
+2011-04-02,2
+2011-04-04,0
+2011-04-18,2
+2011-04-20,0
+2011-04-21,1
+2011-05-02,2
+2011-05-06,0
+2011-05-10,1
+2011-05-11,0
+2011-05-18,1
+2011-05-20,0
+2011-05-25,0
+2011-05-26,1
+2011-05-27,2
+2011-05-31,1
+2011-06-02,0
+2011-06-13,0
+2011-06-20,1
+2011-06-29,2
+2011-07-06,0
+2011-07-07,2
+2011-07-08,2
+2011-07-12,2
+2011-07-13,1
+2011-07-14,1
+2011-07-18,2
+2011-07-19,0
+2011-07-20,2
+2011-07-21,1
+2011-07-29,2
+2011-08-01,1
+2011-08-02,1
+2011-08-08,1
+2011-08-10,0
+2011-08-11,2
+2011-08-22,0
+2011-08-23,0
+2011-08-24,1
+2011-08-31,1
+2011-09-06,0
+2011-09-08,1
+2011-09-09,0
+2011-09-12,0
+2011-09-21,0
+2011-09-27,1
+2011-09-29,2
+2011-10-07,0
+2011-10-10,0
+2011-10-13,1
+2011-10-27,0
+2011-11-04,0
+2011-11-07,0
+2011-11-08,2
+2011-11-13,1
+2011-11-14,0
+2011-11-21,0
+2011-11-22,0
+2011-11-23,1
+2011-11-30,1
+2011-12-05,0
+2011-12-06,0
+2011-12-07,1
+2011-12-13,0
+2011-12-18,0
+2011-12-29,0
+2012-01-03,0
+2012-01-09,2
+2012-01-24,2
+2012-02-01,0
+2012-02-02,1
+2012-02-07,0
+2012-02-10,1
+2012-02-21,0
+2012-02-24,0
+2012-02-27,2
+2012-02-28,0
+2012-03-13,1
+2012-03-15,0
+2012-03-22,2
+2012-04-02,2
+2012-04-05,0
+2012-04-18,0
+2012-04-23,1
+2012-05-03,0
+2012-05-04,1
+2012-05-08,1
+2012-05-11,0
+2012-05-16,0
+2012-05-20,1
+2012-05-21,2
+2012-05-28,1
+2012-06-03,0
+2012-06-04,0
+2012-06-06,0
+2012-06-07,0
+2012-06-19,2
+2012-06-25,1
+2012-06-29,1
+2012-07-04,2
+2012-07-12,1
+2012-07-19,2
+2012-08-01,1
+2012-08-08,0
+2012-08-23,1
+2012-08-28,2
+2012-09-20,1
+2012-09-24,2
+2012-09-25,0
+2012-10-16,2
+2012-11-01,2
+2012-11-08,0
+2012-11-15,2
+2012-11-16,2
+2012-11-28,2
+2012-11-30,2
+2012-12-13,2
+2012-12-19,2
+2012-12-24,0
+2012-12-31,2
+2013-01-10,1
+2013-01-15,0
+2013-01-24,1
+2013-02-04,2
+2013-02-05,1
+2013-02-12,2
+2013-02-13,0
+2013-02-14,0
+2013-02-15,1
+2013-02-20,0
+2013-02-28,0
+2013-03-04,0
+2013-04-01,2
+2013-04-02,0
+2013-04-03,0
+2013-04-14,2
+2013-04-15,2
+2013-04-16,0
+2013-04-17,0
+2013-04-19,0
+2013-04-25,0
+2013-04-26,1
+2013-05-07,1
+2013-05-17,1
+2013-05-20,0
+2013-05-29,0
+2013-05-30,2
+2013-06-03,1
+2013-06-07,1
+2013-06-26,0
+2013-07-12,0
+2013-07-15,1
+2013-07-22,1
+2013-07-23,2
+2013-07-24,0
+2013-07-26,1
+2013-08-07,1
+2013-08-13,1
+2013-08-15,1
+2013-08-22,2
+2013-08-26,2
+2013-09-04,0
+2013-09-12,2
+2013-09-13,2
+2013-09-16,2
+2013-09-20,2
+2013-10-16,2
+2013-10-18,0
+2013-10-26,1
+2013-10-29,2
+2013-11-06,1
+2013-11-13,1
+2013-11-14,0
+2013-11-26,0
+2013-12-03,0
+2013-12-12,0
+2013-12-20,1
+2014-01-14,0
+2014-01-15,2
+2014-01-23,2
+2014-01-29,2
+2014-02-10,2
+2014-02-12,1
+2014-02-14,1
+2014-02-18,0
+2014-02-26,2
+2014-03-11,2
+2014-03-13,2
+2014-03-25,2
+2014-03-26,0
+2014-05-15,1
+2014-05-16,2
+2014-05-27,2
+2014-06-19,2
+2014-07-11,2
+2014-08-08,2
+2014-08-14,1
+2014-08-19,1
+2014-08-21,0
+2014-08-27,0
+2014-09-16,1
+2014-09-20,1
+2014-10-02,0
+2014-10-17,0
+2014-10-30,1
+2014-10-31,1
+2014-11-01,0
+2014-11-10,0
+2014-11-17,0
+2014-11-18,1
+2014-11-19,1
+2014-11-26,1
+2014-12-11,1
+2014-12-19,1
+2014-12-26,0
+2014-12-30,2
+2015-01-12,0
+2015-01-19,1
+2015-01-21,1
+2015-01-31,0
+2015-02-01,2
+2015-02-11,2
+2015-02-22,2
+2015-03-06,0
+2015-03-12,1
+2015-04-15,1
+2015-04-29,0
+2015-06-05,0
+2015-06-17,2
+2015-06-18,0
+2015-07-24,2
+2015-07-28,2
+2015-07-29,1
+2015-08-02,0
+2015-08-07,0
+2015-08-12,2
+2015-08-14,2
+2015-08-19,0
+2015-09-06,1
+2015-09-09,0
+2015-09-15,0
+2015-09-21,1
+2015-10-04,1
+2015-10-05,0
+2015-10-15,1
+2015-10-19,1
+2015-10-22,1
+2015-10-28,1
+2015-10-30,2
+2015-11-09,2
+2015-11-19,1
+2015-11-27,1
+2015-12-04,0
+2015-12-14,1
+2015-12-17,1
+2015-12-22,0
+2015-12-31,2
+2016-01-08,1
+2016-01-10,0
+2016-01-11,1
+2016-01-13,1
+2016-01-19,1
+2016-01-27,1
+2016-02-04,1
+2016-02-05,1
+2016-02-08,2
+2016-02-09,1
+2016-02-11,0
+2016-02-19,1
+2016-02-24,1
+2016-03-03,1
+2016-03-22,1
+2016-04-11,1
+2016-04-12,1
+2016-04-13,1
+2016-04-14,1
+2016-04-19,1
+2016-04-20,0
+2016-04-25,1
+2016-04-28,1
+2016-05-02,2
+2016-05-05,2
+2016-05-11,0
+2016-05-12,1
+2016-05-16,0
+2016-05-26,1
+2016-06-03,2
+2016-06-06,0
+2016-06-08,1
+2016-06-14,0
+2016-06-15,0
+2016-06-16,2
+2016-06-20,0
+2016-06-21,0
+2016-06-24,1
+2016-07-06,0
+2016-07-13,0
+2016-07-27,2
+2016-08-11,2
+2016-08-12,1
+2016-08-17,0
+2016-08-18,2
+2016-08-19,1
+2016-08-22,2
+2016-08-24,2
+2016-08-25,2
+2016-08-26,0
+2016-08-30,0
+2016-09-14,1
+2016-09-21,0
+2016-09-30,2
+2016-10-04,1
+2016-10-07,1
+2016-10-15,1
+2016-11-03,0
+2016-11-04,0
+2016-11-08,2
+2016-11-09,0
+2016-11-11,0
+2016-11-14,0
+2016-11-16,1
+2016-11-29,0
+2016-12-02,1
+2016-12-05,2
+2016-12-06,2
+2016-12-15,2
+2016-12-16,0
+2016-12-18,0
+2016-12-29,0
+2016-12-30,0
+2017-01-06,1
+2017-01-09,0
+2017-01-10,1
+2017-01-12,0
+2017-01-17,2
+2017-01-20,0
+2017-01-31,0
+2017-02-06,1
+2017-02-07,2
+2017-02-08,1
+2017-02-09,0
+2017-02-24,0
+2017-03-09,1
+2017-03-22,1
+2017-03-23,0
+2017-03-29,0
+2017-04-07,2
+2017-04-10,1
+2017-04-20,0
+2017-05-18,0
+2017-05-22,0
+2017-06-07,0
+2017-06-12,0
+2017-06-26,2
+2017-07-31,1
+2017-08-11,1
+2017-08-25,0
+2017-09-06,0
+2017-10-10,1
+2018-01-16,0
+2018-01-24,2
+2018-02-01,1
+2018-02-05,1
+2018-02-23,1
+2018-04-11,2
+2018-05-24,2
+2018-10-11,0
+2018-11-29,1
+2019-01-08,1
+2019-02-21,2
+2019-02-24,1
+2019-03-27,1
+2019-06-05,1
+2019-06-07,1
+2019-06-25,2
+2019-07-18,1
+2019-08-29,2
+2019-09-12,1
+2019-09-23,1
+2019-10-09,1
+2019-10-25,1
+2019-11-19,2
+2020-01-08,2
+2020-01-09,1
+2020-02-14,0
+2020-03-19,0
+2020-03-31,0
+2020-04-02,1
+2020-04-22,0
+2020-04-30,1
+2020-05-18,0
+2020-05-19,1
+2020-06-03,1
+2020-06-12,0
+2020-06-22,1
+2020-07-08,0
+2020-07-19,0
+2020-07-28,0
+2020-08-03,2
+2020-08-04,1
+2020-08-22,0
+2020-08-24,2
+2020-08-26,0
+2020-10-31,1
+2020-11-02,1
+2020-11-04,0
+2020-11-06,0
+2020-11-17,0
+2020-11-22,0
+2020-11-30,1
+2020-12-03,1
+2020-12-08,2
+2021-01-22,2
+2021-04-09,1
+2021-04-11,0
+2021-05-17,0
+2021-05-18,2
+2021-05-27,1
+2021-06-17,1
+2021-06-28,0
+2021-06-29,1
+2021-08-10,0
+2021-08-22,1
+2021-09-28,1
+2022-02-14,1
+2022-02-22,1
+2022-03-15,1
+2022-04-14,1
+2022-04-18,2
+2022-05-03,1
+2022-06-27,1
+2022-07-07,1
+2022-07-22,1
+2022-08-09,0
+2022-08-15,0
+2022-09-12,1
+2022-09-26,0
+2022-10-27,0
+2022-11-07,2
+2022-12-05,2
+2023-03-17,1

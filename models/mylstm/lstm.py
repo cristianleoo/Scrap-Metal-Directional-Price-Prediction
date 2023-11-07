@@ -1,6 +1,7 @@
 import torch
 from torch import nn as nn
 from torch.nn import init
+from torch.autograd import Variable
 import torch.nn.functional as F
 import numpy as np
 import os
@@ -25,26 +26,28 @@ class LstmCell(nn.Module):
         self.dropout_value = dropout
 
         # stack three LSTMs with 128, 64, and 32 nodes
-        self.lstm1 = nn.LSTM(input_size=input_size, hidden_size=64, num_layers=n_layers, batch_first=True)
-        self.lstm2 = nn.LSTM(input_size=128, hidden_size=64, num_layers=n_layers, batch_first=True)
-        self.lstm3 = nn.LSTM(input_size=64, hidden_size=32, num_layers=n_layers, batch_first=True)
+        self.lstm1 = nn.LSTM(input_size=input_size, hidden_size=self.hidden_size, num_layers=n_layers, batch_first=True)
+        self.lstm2 = nn.LSTM(input_size=self.hidden_size, hidden_size=128, num_layers=n_layers, batch_first=True)
+        self.lstm3 = nn.LSTM(input_size=128, hidden_size=64, num_layers=n_layers, batch_first=True)
 
         self.dropout = nn.Dropout(dropout)
         self.tanh = nn.Tanh()
         self.relu = nn.ReLU()
-        self.linear = nn.Linear(64, 1)
-        self.softmax = nn.Softmax()
+        self.linear = nn.Linear(32, 1)
+        self.sigmoid = nn.Sigmoid()
         self.flatten = nn.Flatten()
+        self.fc_1 =  nn.Linear(self.hidden_size, 32) #fully connected 1
 
         # Parameters initalization
         if initialization=='Xavier':
-            for param in self.lestm.parameters():
+            for param in self.lstm1.parameters():
                 if len(param)>=2:
-                    init.xavier_uniform_()
+                    # init.xavier_uniform_()
+                    init.xavier_uniform_(param.data)
         elif initialization=='Kaiming':
-            for param in self.lstm.parameters():
+            for param in self.lstm1.parameters():
                 if len(param)>=2:
-                    init.kaiming_uniform_()
+                    init.kaiming_uniform_(param.data)
         
         # Initalize hook to store gradients
         self.gradients = [None] * len(list(self.lstm1.parameters()) + list(self.lstm2.parameters()) + list(self.lstm3.parameters()))
@@ -58,42 +61,31 @@ class LstmCell(nn.Module):
             param.register_hook(lambda grad, idx=idx: self.save_gradient(grad, idx))
 
     def forward(self, x):
-        h0 = torch.zeros(self.n_layers, x.size(0), 64).to(x.device)
-        c0 = torch.zeros(self.n_layers, x.size(0), 64).to(x.device)
-        out, _ = self.lstm1(x, (h0, c0))
+
+        # lstm_out, (h_n, c_n) = self.lstm1(x)
+        # lstm_out = self.dropout(lstm_out)
+        # logits = self.linear(h_n[-1])
         
-        out = self.relu(out)
-        out = self.dropout(out)
+        lstm_out, (h_n, c_n) = self.lstm1(x)
+        lstm_out = self.dropout(lstm_out)
+        # lstm_out, (h_n, c_n) = self.lstm2(lstm_out)
+        # lstm_out = self.dropout(lstm_out)
+        # lstm_out, (h_n, c_n) = self.lstm3(lstm_out)
+        # lstm_out = self.dropout(lstm_out)
+        logits = self.linear(h_n[-1])
+        probs = self.sigmoid(logits)
+        # logits = self.relu(logits)
+        # logits = self.linear(logits)
+    
+        return probs
 
-        # h1 = torch.zeros(1, x.size(0), 64).to(x.device)
-        # c1 = torch.zeros(1, x.size(0), 64).to(x.device)
-        # out, _ = self.lstm2(out, (h1, c1))
-
-        # out = self.relu(out)
-        # out = self.dropout(out)
-
-        # h2 = torch.zeros(1, x.size(0), 32).to(x.device)
-        # c2 = torch.zeros(1, x.size(0), 32).to(x.device)
-        # out, _ = self.lstm3(out, (h2, c2))
-
-        # out = self.relu(out)
-        # out = self.dropout(out)
-        out = self.flatten(out)
-
-        out = self.linear(out)
-        # out = self.linear(out)
-
-        # out = self.softmax(out)
-        
-        return out
-
-    def backward(self, x, y, criterion, optimizer):
-        outputs = self.forward(x)
-        loss = criterion(outputs, y)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        return loss
+    # def backward(self, x, y, criterion, optimizer):
+    #     outputs = self.forward(x)
+    #     loss = criterion(outputs, y)
+    #     optimizer.zero_grad()
+    #     loss.backward()
+    #     optimizer.step()
+    #     return loss
     
     def get_gradients(self):
         return self.gradients

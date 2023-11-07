@@ -3,6 +3,7 @@ from etl.etl import ETL
 import os
 import requests
 import pandas as pd
+import numpy as np
 
 class Fredapi(ETL):
     def __init__(self, *args, **kwargs):
@@ -44,7 +45,7 @@ class Fredapi(ETL):
 
         for index in self.indices[0]: # Note: self.indices is a tuple with a single list
             series = fred.get_series(index, self.start_day, self.end_day)
-            series = series.resample("D").ffill().reset_index()
+            series = series.resample("M").last().reset_index()
             series.columns = ["date", index]
             dfs.append(series)
 
@@ -57,7 +58,7 @@ class Fredapi(ETL):
         macro_df.rename(columns=names, inplace=True)
 
         macro_df = macro_df.round(4)
-        macro_df.to_csv(f'{os.getcwd()}/data/macro.csv', index=False)
+        macro_df.to_csv(f'{os.getcwd()}/data/fred/macro.csv', index=False)
         print('macro.csv created')
         return macro_df
 
@@ -76,9 +77,10 @@ class Fredapi(ETL):
         df = pd.DataFrame(response.json()['observations'])
         return df
     
+
     def preprocess(self, df):
         df['date'] = pd.to_datetime(df['date'])
-        df['value'] = df['value'].astype(float)
+        df['value'] = df['value'].apply(lambda x: float(x) if x!='.' else np.nan)
         df = df[['date', 'value']]
         return df
     
@@ -118,5 +120,8 @@ class Fredapi(ETL):
         non_ferrous = self.join_tables(non_ferrous_price, non_ferrous_inv, non_ferrous_orders)
         self.post_scrap(non_ferrous, 'non_ferrous')
 
+    #############################################
+
+    
 
 
