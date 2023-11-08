@@ -27,11 +27,16 @@ class Target:
         lag = serie.shift(1)
         return (serie - lag) / lag
     
-    def indexing(self, df):
+    def indexing(self, df, keep_price=True):
+        df_copy = df.copy()
         for serie in self.series:
             values = self.change(df[df['SeriesID'] == serie]['Value'])
             df.loc[df['SeriesID'] == serie, 'Value'] = values
         df = df.groupby(['Date'])['Value'].sum().reset_index()
+
+        if keep_price:
+            for serie in self.series:
+                df[f'Scrap_{serie}_Price'] = df_copy[df_copy['SeriesID'] == serie]['Value'].values
         df['Value'] = round(df['Value']/len(self.series), 4)
         return df
     
@@ -70,10 +75,11 @@ class Target:
         # cols = ['Date', 'Data Series', 'Category', 'Source', 'Unit', 'Value']
         # df = df[cols]
         # df.reset_index(drop=True, inplace=True)
-        df = self.indexing(df)
+        df = self.indexing(df, keep_price=True)
         # df['Target'] = self.classify(df['Value'])
         df['Target'] = df['Value']
         df.drop(['Value'], axis=1, inplace=True)
+        # df.drop(['Value'], axis=1, inplace=True)
         df.rename(columns={'Date':'date'}, inplace=True)
         df = df.resample('M', on='date').last().reset_index()
         df['date'] = df['date'].dt.date

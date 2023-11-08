@@ -18,7 +18,6 @@ class Ingest():
         self.y_train = None
         self.y_val = None
         self.y_test = None
-        self.fe = FeatureEngineering()
         self.imputer = IterativeImputer(RandomForestRegressor(), max_iter=10, random_state=0)
 
     #############################
@@ -67,6 +66,7 @@ class Ingest():
             df = self.df
 
         df.drop(['date'], axis=1, inplace=True)
+        # df['scrap_change'] = df['Target'].shift(-1)
         df['Target'] = self.binarizer(df['Target'])
         
         train = df.iloc[:int((1-test_size)*len(df)), :]
@@ -74,7 +74,8 @@ class Ingest():
 
         train, test = self.impute_numerical(train, test)
         if transform:
-            train, test = self.fe.transformer(train, test, train.columns[:-1], 'Target')
+            fe = FeatureEngineering(train, test, 'Target', train.columns[:-1])
+            train, test, new_cols = fe.main()
         test = test[train.columns]
 
         X_train = train.drop(['Target'], axis=1)
@@ -86,8 +87,8 @@ class Ingest():
             train, test = self.scale(X_train, X_test)
 
         if drop_unimportant:
-            X_train.drop(self.fe.unimportant_features, axis=1, inplace=True)
-            X_test.drop(self.fe.unimportant_features, axis=1, inplace=True)
+            X_train.drop(fe.unimportant_features, axis=1, inplace=True)
+            X_test.drop(fe.unimportant_features, axis=1, inplace=True)
 
         if val:
             X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=test_size, shuffle=False)

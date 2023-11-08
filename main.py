@@ -131,7 +131,7 @@ if __name__ == "__main__":
                  yahoo=False, 
                  fred=False, 
                  alpha=False, 
-                 target=False)
+                 target=True)
     
     pipeline = Preprocess(tick_list)
     pipeline.main()
