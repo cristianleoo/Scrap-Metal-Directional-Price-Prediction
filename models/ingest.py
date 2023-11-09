@@ -58,6 +58,7 @@ class Ingest():
               test_size=0.2, 
               val=False, 
               transform=True,
+              new_cols=None,
               drop_unimportant=False, 
               scale=False):
         if self.df is None:
@@ -73,18 +74,27 @@ class Ingest():
         test = df.iloc[int((1-test_size)*len(df)):, :]
 
         train, test = self.impute_numerical(train, test)
-        if transform:
+        if transform and new_cols is None:
             fe = FeatureEngineering(train, test, 'Target', train.columns[:-1])
-            train, test, new_cols = fe.main()
+            train, test, self.new_cols = fe.main()
+            train, test = fe.main_feature_elimination(train, test)
+        elif transform and new_cols is not None:
+            fe = FeatureEngineering(train, test, 'Target', new_cols)
+            train, test, self.new_cols = fe.apply_arithmetic_operations(new_cols)
+            train, test = fe.main_feature_elimination(train, test)
+
         test = test[train.columns]
 
         X_train = train.drop(['Target'], axis=1)
-        y_train = train[['Target']]
+        y_train = train[['Target']].astype(int)
         X_test = test.drop(['Target'], axis=1)
-        y_test = test[['Target']]
+        y_test = test[['Target']].astype(int)
+        if transform:
+            X_train, n_imp_features = fe.final_selection(X_train, y_train)
+            X_test=X_test[n_imp_features]
 
         if scale:
-            train, test = self.scale(X_train, X_test)
+            X_train, X_test = self.scale(X_train, X_test)
 
         if drop_unimportant:
             X_train.drop(fe.unimportant_features, axis=1, inplace=True)
@@ -120,3 +130,13 @@ class Ingest():
             # Write file
             json.dump(data, f, indent=4)
         print('Loss saved to loss.json')
+
+
+ingest = Ingest()
+X_train, X_val, X_test, y_train, y_val, y_test = ingest.split(val=False,
+                                                               drop_unimportant=False, 
+                                                               transform=True,
+                                                            #    new_cols=new_cols,
+                                                               scale=False
+                                                               ) # drop_unimportant=False give the best result for CatBoost
+X_train.head()

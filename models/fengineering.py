@@ -10,6 +10,11 @@ from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassif
 from sklearn.svm import SVC
 from sklearn.cluster import KMeans
 from tqdm import tqdm
+import xgboost as xgb
+from catboost import CatBoostClassifier
+import lightgbm as lgb
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 class FeatureEngineering:
     def __init__(self, train, test, target, cont_cols):
@@ -165,7 +170,7 @@ class FeatureEngineering:
             kf=KFold(n_splits=5, shuffle=False)
             
             X=self.train[[col+"_unimp_cluster_WOE"]].values
-            y=self.train["defects"].astype(int).values
+            y=self.train[self.target].astype(int).values
 
             auc=[]
             for train_idx, val_idx in kf.split(X,y):
@@ -223,7 +228,7 @@ class FeatureEngineering:
                 for train_index, val_index in skf.split(self.train, self.train[self.target]):
                     X_train, X_val = temp_df[column].iloc[train_index].values.reshape(-1, 1), temp_df[column].iloc[val_index].values.reshape(-1, 1)
                     y_train, y_val = self.train[self.target].astype(int).iloc[train_index], self.train[self.target].astype(int).iloc[val_index]
-                    model = SVC()#HistGradientBoostingClassifier(max_iter=300, learning_rate=0.02, max_depth=6, random_state=42)
+                    model = SVC(probability=True)#HistGradientBoostingClassifier(max_iter=300, learning_rate=0.02, max_depth=6, random_state=42)
                     model.fit(X_train, y_train)
                     y_pred = model.predict_proba(X_val)[:,1]
                     score = roc_auc_score( y_val, y_pred)
@@ -240,9 +245,275 @@ class FeatureEngineering:
                     new_cols.append(best_col)
                     print(f"Added column '{best_col}' with ROC AUC Score: {best_auc:.4f} & Correlation {corr_with_other_cols.abs().max():.4f}")
 
-        #return train, test, new_cols
+        return self.train, self.test, new_cols
     
+    #############################
+
     def main(self):
         selected_features=[f for f in self.train.columns if self.train[f].nunique()>2 and f not in self.unimportant_features]
         train, test, new_cols= self.better_features(selected_features, self.overall_best_score)
         return train, test, new_cols
+    
+    #############################
+    def apply_arithmetic_operations(self, expressions_list):
+        '''
+        We pass the selected arithmetic combinations
+        '''
+        train_df = self.train.copy()
+        test_df = self.test.copy()
+
+        for expression in expressions_list:
+            if expression not in train_df.columns:
+                # Split the expression based on operators (+, -, *, /)
+                parts = expression.split('+') if '+' in expression else \
+                        expression.split('-') if '-' in expression else \
+                        expression.split('*') if '*' in expression else \
+                        expression.split('/')
+
+                # Get the DataFrame column names involved in the operation
+                cols = [col for col in parts]
+
+                # Perform the corresponding arithmetic operation based on the operator in the expression
+                if cols[0] in train_df.columns and cols[1] in train_df.columns:
+                    if '+' in expression:
+                        train_df[expression] = train_df[cols[0]] + train_df[cols[1]]
+                        test_df[expression] = test_df[cols[0]] + test_df[cols[1]]
+                    elif '-' in expression:
+                        train_df[expression] = train_df[cols[0]] - train_df[cols[1]]
+                        test_df[expression] = test_df[cols[0]] - test_df[cols[1]]
+                    elif '*' in expression:
+                        train_df[expression] = train_df[cols[0]] * train_df[cols[1]]
+                        test_df[expression] = test_df[cols[0]] * test_df[cols[1]]
+                    elif '/' in expression:
+                        train_df[expression] = train_df[cols[0]] / (train_df[cols[1]]+1e-5)
+                        test_df[expression] = test_df[cols[0]] /( test_df[cols[1]]+1e-5)
+        
+        return train_df, test_df
+    
+    #############################
+    # FEATURE SELECTION
+
+    def feature_elimination(self, train, test):
+        first_drop=[ f for f in self.unimportant_features if f in train.columns]
+        train=train.drop(columns=first_drop)
+        test=test.drop(columns=first_drop)
+        final_drop_list=[]
+
+        table = PrettyTable()
+        table.field_names = ['Original', 'Final Transformation', 'ROV AUC CV']
+        threshold=0.95
+        # It is possible that multiple parent features share same child features, so store selected features to avoid selecting the same feature again
+        best_cols=[]
+
+        for col in self.cont_cols:
+            sub_set=[f for f in train.columns if (str(col) in str(f)) and (train[f].nunique()>2)]
+        #     print(sub_set)
+            if len(sub_set)>2:
+                correlated_features = []
+
+                for i, feature in enumerate(sub_set):
+                    # Check correlation with all remaining features
+                    for j in range(i+1, len(sub_set)):
+                        correlation = np.abs(train[feature].corr(train[sub_set[j]]))
+                        # If correlation is greater than threshold, add to list of highly correlated features
+                        if correlation > threshold:
+                            correlated_features.append(sub_set[j])
+
+                # Remove duplicate features from the list
+                correlated_features = list(set(correlated_features))
+        #         print(correlated_features)
+                if len(correlated_features)>=2:
+                    temp_train=train[correlated_features]
+                    temp_test=test[correlated_features]
+                    #Scale before applying PCA
+                    sc=StandardScaler()
+                    temp_train=sc.fit_transform(temp_train)
+                    temp_test=sc.transform(temp_test)
+
+                    # Initiate PCA
+                    pca=TruncatedSVD(n_components=1)
+                    x_pca_train=pca.fit_transform(temp_train)
+                    x_pca_test=pca.transform(temp_test)
+                    x_pca_train=pd.DataFrame(x_pca_train, columns=[col+"_pca_comb_final"])
+                    # x_pca_test=pd.DataFrame(x_pca_test, columns=[col+"_pca_comb_final"])
+                    train=pd.concat([train,x_pca_train], axis=1)
+                    # test=pd.concat([test,x_pca_test], axis=1)
+                    test[col+"_pca_comb_final"]=x_pca_test
+
+                    # Clustering
+                    model = KMeans()
+                    kmeans = KMeans(n_clusters=10)
+                    kmeans.fit(np.array(temp_train))
+                    labels_train = kmeans.labels_
+
+                    train[col+'_final_cluster'] = labels_train
+                    test[col+'_final_cluster'] = kmeans.predict(np.array(temp_test))
+
+
+                    correlated_features=correlated_features+[col+"_pca_comb_final",col+"_final_cluster"]
+
+                    # See which transformation along with the original is giving you the best univariate fit with target
+                    kf=KFold(n_splits=5, shuffle=True, random_state=42)
+
+                    scores=[]
+
+                    for f in correlated_features:
+                        X=train[[f]].values
+                        y=train[self.target].astype(int).values
+
+                        auc=[]
+                        for train_idx, val_idx in kf.split(X,y):
+                            X_train,y_train=X[train_idx],y[train_idx]
+                            X_val,y_val=X[val_idx],y[val_idx]
+
+                            model = HistGradientBoostingClassifier (max_iter=300, learning_rate=0.02, max_depth=6, random_state=42)
+                            model.fit(X_train,y_train)
+                            y_pred = model.predict_proba(X_val)[:,1]
+                            score = roc_auc_score( y_val, y_pred)
+                            auc.append(score)
+                        if f not in best_cols:
+                            scores.append((f,np.mean(auc)))
+                    best_col, best_auc=sorted(scores, key=lambda x:x[1], reverse=True)[0]
+                    best_cols.append(best_col)
+
+                    cols_to_drop = [f for f in correlated_features if  f not in best_cols]
+                    if cols_to_drop:
+                        final_drop_list=final_drop_list+cols_to_drop
+                    table.add_row([col,best_col ,best_auc])
+
+        print(table)
+        return train, test
+
+    #############################
+
+    def scaling(self, train, test):
+        final_features=[f for f in train.columns if f not in [self.target]]
+        final_features=[*set(final_features)]
+
+        sc=StandardScaler()
+
+        train_scaled=train.copy()
+        test_scaled=test.copy()
+        train_scaled[final_features]=sc.fit_transform(train[final_features])
+        test_scaled[final_features]=sc.transform(test[final_features])
+        return train_scaled, test_scaled
+    
+    #############################
+
+    def post_processor(self, train, test):
+        # train, test = self.scaling(train, test)
+        '''
+        After Scaleing, some of the features may be the same and can be eliminated
+        '''
+        cols=[f for f in train.columns if self.target not in f and "OHE" not in f]
+        train_cop=train.copy()
+        test_cop=test.copy()
+        drop_cols=[]
+        for i, feature in enumerate(cols):
+            for j in range(i+1, len(cols)):
+                if sum(abs(train_cop[feature]-train_cop[cols[j]]))==0:
+                    if cols[j] not in drop_cols:
+                        drop_cols.append(cols[j])
+        print(drop_cols)
+        train_cop.drop(columns=drop_cols,inplace=True)
+        test_cop.drop(columns=drop_cols,inplace=True)
+        
+        return train_cop, test_cop
+    
+    #############################
+
+    def main_feature_elimination(self, train, test):
+        '''
+        This function is used to eliminate the features which are not important
+        '''
+        train, test = self.scaling(train, test)
+        train, test = self.feature_elimination(train, test)
+        train, test = self.post_processor(train, test)
+        return train, test
+
+    #############################
+
+    def get_most_important_features(self,
+                                    X_train, 
+                                    y_train, 
+                                    n, 
+                                    model_input,
+                                    visualize=True):
+        xgb_params = {
+                'n_jobs': -1,
+                'eval_metric': 'logloss',
+                'objective': 'binary:logistic',
+                'tree_method': 'hist',
+                'verbosity': 0,
+                'random_state': 42,
+            }
+        lgb_params = {
+                'objective': 'binary',
+                'metric': 'logloss',
+                'boosting_type': 'gbdt',
+                'random_state': 42,
+            }
+        cb_params = {
+                'grow_policy': 'Depthwise',
+                'bootstrap_type': 'Bayesian',
+                'od_type': 'Iter',
+                'eval_metric': 'AUC',
+                'loss_function': 'Logloss',
+                'random_state': 42,
+            }
+        if 'xgb' in model_input:
+            model = xgb.XGBClassifier(**xgb_params)
+        elif 'cat' in model_input:
+            model=CatBoostClassifier(**cb_params)
+        else:
+            model=lgb.LGBMClassifier(**lgb_params)
+            
+        
+
+        X_train_fold, X_val_fold = X_train.iloc[:int(len(X_train)*0.8), :], X_train.iloc[int(len(X_train)*0.8):, :]
+        y_train_fold, y_val_fold = y_train.iloc[:int(len(X_train)*0.8)], y_train.iloc[int(len(X_train)*0.8):]
+
+        model.fit(X_train_fold, y_train_fold)
+        
+        y_pred = model.predict_proba(X_val_fold)[:,1]
+        auc_score = roc_auc_score(y_val_fold, y_pred)
+        feature_importances = model.feature_importances_
+
+        feature_importance_list = [(X_train.columns[i], importance) for i, importance in enumerate(feature_importances)]
+        sorted_features = sorted(feature_importance_list, key=lambda x: x[1], reverse=True)
+        top_n_features = [feature[0] for feature in sorted_features[:n]]
+
+        display_features=top_n_features[:10]
+        
+        if visualize:
+            sns.set_palette("Set2")
+            plt.figure(figsize=(8, 6))
+            plt.barh(range(len(display_features)), [feature_importances[X_train.columns.get_loc(feature)] for feature in display_features])
+            plt.yticks(range(len(display_features)), display_features, fontsize=12)
+            plt.xlabel('Feature Importance', fontsize=14)
+            plt.ylabel('Features', fontsize=10)
+            plt.title(f'Top {10} of {n} Feature Importances with ROC AUC score {auc_score}', fontsize=16)
+            plt.gca().invert_yaxis()  # Invert y-axis to have the most important feature on top
+            plt.grid(axis='x', linestyle='--', alpha=0.7)
+            plt.xticks(fontsize=8)
+            plt.yticks(fontsize=8)
+
+            # Add data labels on the bars
+            for index, value in enumerate([feature_importances[X_train.columns.get_loc(feature)] for feature in display_features]):
+                plt.text(value + 0.005, index, f'{value:.3f}', fontsize=12, va='center')
+
+            plt.tight_layout()
+            plt.show()
+
+        return top_n_features
+    
+    #############################
+
+    def final_selection(self, X_train, y_train, n=150, visualize=True):
+        n_imp_features_cat=self.get_most_important_features(X_train.reset_index(drop=True), y_train, n, 'cat', visualize)
+        n_imp_features_xgb=self.get_most_important_features(X_train.reset_index(drop=True), y_train, n, 'xgb', visualize)
+        n_imp_features_lgbm=self.get_most_important_features(X_train.reset_index(drop=True), y_train, n, 'lgbm', visualize)
+        n_imp_features=[*set(n_imp_features_xgb+n_imp_features_lgbm+n_imp_features_cat)]
+        print(f"{len(n_imp_features)} features have been selected from three algorithms for the final model")
+        X_train=X_train[n_imp_features]
+        return X_train, n_imp_features
