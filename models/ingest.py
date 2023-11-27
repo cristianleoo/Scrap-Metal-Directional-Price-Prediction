@@ -8,8 +8,25 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
+import warnings
+warnings.filterwarnings('ignore')
 
 class Ingest():
+    """
+    Ingest class for data ingestion, preprocessing, and splitting.
+
+    Methods:
+        - get_data(): Read data from a CSV file.
+        - scale(train, test): Scale numerical features in the train and test sets.
+        - impute_numerical(train, test, y='Target'): Impute missing values in numerical features.
+        - binarizer(y): Binarize the target variable.
+        - split(test_size=0.2, val=False, transform=True, new_cols=None, drop_unimportant=False, scale=False):
+            Split the data into train/validation/test sets and perform preprocessing.
+
+    Example:
+        ingest = Ingest()
+        X_train, X_val, X_test, y_train, y_val, y_test = ingest.split(val=False, drop_unimportant=False, transform=True, scale=False)
+    """
     def __init__(self):
         self.df = None
         self.X_train = None
@@ -23,6 +40,12 @@ class Ingest():
     #############################
 
     def get_data(self):
+        """
+        Read data from a CSV file.
+
+        Returns:
+            - df: DataFrame, the loaded dataset
+        """
         df = pd.read_csv(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data/preprocessed/data.csv'))
         self.df = df
         return df
@@ -30,8 +53,18 @@ class Ingest():
     #############################
     
     def scale(self, train, test):
+        """
+        Scale numerical features in the train and test sets.
+
+        Parameters:
+            - train: DataFrame, training set
+            - test: DataFrame, test set
+
+        Returns:
+            - train, test: Scaled training and test sets
+        """
         scale = MinMaxScaler() #StandardScaler() #RobustScaler()
-        cols_to_scale = [col for col in train.columns if not col.endswith('_sentiment') or not col.endswith('_rating') or col != 'Target']
+        cols_to_scale = [col for col in train.columns if not col.endswith('_sentiment') or not col.endswith('_rating') or col != 'Target' or not col.endswith('benzinga')]
         
         train[cols_to_scale] = scale.fit_transform(train[cols_to_scale])
         test[cols_to_scale] = scale.transform(test[cols_to_scale])
@@ -40,9 +73,20 @@ class Ingest():
     #############################
 
     def impute_numerical(self, train, test, y='Target'):
+        """
+        Impute missing values in numerical features.
+
+        Parameters:
+            - train: DataFrame, training set
+            - test: DataFrame, test set
+            - y: str, target variable name
+
+        Returns:
+            - train, test: Imputed training and test sets
+        """
         # check if columns are numerical
         #numerical_cols = train.drop([y], axis=1).select_dtypes(include=['int64', 'float64']).columns
-        cols = train.drop([y], axis=1).columns
+        cols = [col for col in train.columns[:-1] if not col.endswith('benzinga')] #train.drop([y], axis=1).columns
         train[cols] = self.imputer.fit_transform(train[cols])
         test[cols] = self.imputer.transform(test[cols])
         return train, test
@@ -50,6 +94,15 @@ class Ingest():
     #############################
 
     def binarizer(self, y):
+        """
+        Binarize the target variable.
+
+        Parameters:
+            - y: array-like, target variable
+
+        Returns:
+            - binarized_y: array-like, binarized target variable
+        """
         return np.where(y > 0, 1.0, 0.0)
     
     #############################
@@ -61,6 +114,20 @@ class Ingest():
               new_cols=None,
               drop_unimportant=False, 
               scale=False):
+        """
+        Split the data into train/validation/test sets and perform preprocessing.
+
+        Parameters:
+            - test_size: float, default=0.2, proportion of data for the test set
+            - val: bool, default=False, whether to include a validation set
+            - transform: bool, default=True, whether to perform feature engineering
+            - new_cols: list, default=None, additional columns for feature engineering
+            - drop_unimportant: bool, default=False, whether to drop unimportant features
+            - scale: bool, default=False, whether to scale numerical features
+
+        Returns:
+            - X_train, X_val, X_test, y_train, y_val, y_test: Train/validation/test sets
+        """
         if self.df is None:
             df = self.get_data()
         else:
@@ -75,10 +142,12 @@ class Ingest():
 
         train, test = self.impute_numerical(train, test)
         if transform and new_cols is None:
-            fe = FeatureEngineering(train, test, 'Target', train.columns[:-1])
+            cols_to_transform = [col for col in train.columns[:-1] if not col.endswith('benzinga')]
+            fe = FeatureEngineering(train, test, 'Target', cols_to_transform)
             train, test, self.new_cols = fe.main()
             train, test = fe.main_feature_elimination(train, test)
         elif transform and new_cols is not None:
+            cols_to_transform = [col for col in train.columns[:-1] if not col.endswith('benzinga')]
             fe = FeatureEngineering(train, test, 'Target', new_cols)
             train, test, self.new_cols = fe.apply_arithmetic_operations(new_cols)
             train, test = fe.main_feature_elimination(train, test)
@@ -119,6 +188,14 @@ class Ingest():
     #############################
     
     def save_loss(self, loss, code, model_name):
+        """
+        Save loss to a JSON file.
+
+        Parameters:
+            - loss: float, loss value
+            - code: str, model identifier
+            - model_name: str, model name
+        """
         path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models/losses.json')
         with open(path, 'r') as f:
             # Read file
@@ -139,4 +216,5 @@ X_train, X_val, X_test, y_train, y_val, y_test = ingest.split(val=False,
                                                             #    new_cols=new_cols,
                                                                scale=False
                                                                ) # drop_unimportant=False give the best result for CatBoost
+
 X_train.head()

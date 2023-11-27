@@ -19,6 +19,17 @@ warnings.filterwarnings("ignore")
 
 
 class Splitter:
+    """
+    Splitter class for generating train/validation splits.
+
+    Parameters:
+        - test_size: float, default=0.2, the proportion of the dataset to include in the validation split
+        - kfold: bool, default=False, whether to use KFold cross-validation
+        - n_splits: int, default=5, number of folds in KFold
+
+    Methods:
+        - split_data(X, y, random_state_list): Splits the data into train/validation sets based on the specified configuration.
+    """
     def __init__(self, test_size=0.2, kfold=False, n_splits=5):
         self.test_size = test_size
         self.kfold = kfold
@@ -36,6 +47,17 @@ class Splitter:
 ############################################
 
 class Classifier:
+    """
+    Classifier class for defining and initializing multiple classification models.
+
+    Parameters:
+        - n_estimators: int, default=100, number of estimators for ensemble models
+        - device: str, default="cpu", device type for CatBoost ("cpu" or "gpu")
+        - random_state: int, default=0, random state for reproducibility
+
+    Methods:
+        - _define_model(): Define and return a dictionary of classification models.
+    """
     def __init__(self, n_estimators=100, device="cpu", random_state=0):
         self.n_estimators = n_estimators
         self.device = device
@@ -44,6 +66,12 @@ class Classifier:
         self.len_models = len(self.models)
         
     def _define_model(self):
+        """
+        Define and return a dictionary of classification models.
+
+        Returns:
+            - models: dictionary, collection of classification models
+        """
         xgb_params = {
             'n_estimators': self.n_estimators,
             'learning_rate': 0.1,
@@ -200,6 +228,19 @@ class Classifier:
 ############################################
 
 class OptunaWeights:
+    """
+    OptunaWeights class for optimizing ensemble weights using Optuna.
+
+    Parameters:
+        - random_state: int, random state for reproducibility
+        - n_trials: int, default=5000, number of trials for optimization
+
+    Methods:
+        - fit(y_true, y_preds): Optimize ensemble weights using Optuna.
+        - predict(y_preds): Predict using the optimized ensemble weights.
+        - fit_predict(y_true, y_preds): Fit and predict using the optimized ensemble weights.
+        - weights(): Get the optimized ensemble weights.
+    """
     def __init__(self, random_state, n_trials=5000):
         self.study = None
         self.weights = None
@@ -207,6 +248,17 @@ class OptunaWeights:
         self.n_trials = n_trials
 
     def _objective(self, trial, y_true, y_preds):
+        """
+        Objective function for Optuna optimization.
+
+        Parameters:
+            - trial: Optuna trial
+            - y_true: array-like, true labels
+            - y_preds: list of array-like, predicted labels from each model
+
+        Returns:
+            - auc_score: float, ROC AUC score
+        """
         # Define the weights for the predictions from each model
         weights = [trial.suggest_float(f"weight{n}", -2, 3) for n in range(len(y_preds))]
 
@@ -218,6 +270,13 @@ class OptunaWeights:
         return auc_score#/log_loss_score
 
     def fit(self, y_true, y_preds):
+        """
+        Optimize ensemble weights using Optuna.
+
+        Parameters:
+            - y_true: array-like, true labels
+            - y_preds: list of array-like, predicted labels from each model
+        """
         optuna.logging.set_verbosity(optuna.logging.ERROR)
         sampler = optuna.samplers.CmaEsSampler(seed=self.random_state)
         pruner = optuna.pruners.HyperbandPruner()
@@ -227,29 +286,72 @@ class OptunaWeights:
         self.weights = [self.study.best_params[f"weight{n}"] for n in range(len(y_preds))]
 
     def predict(self, y_preds):
+        """
+        Predict using the optimized ensemble weights.
+
+        Parameters:
+            - y_preds: list of array-like, predicted labels from each model
+
+        Returns:
+            - weighted_pred: array-like, weighted ensemble predictions
+        """
         assert self.weights is not None, 'OptunaWeights error, must be fitted before predict'
         weighted_pred = np.average(np.array(y_preds).T, axis=1, weights=self.weights)
         return weighted_pred
 
     def fit_predict(self, y_true, y_preds):
+        """
+        Fit and predict using the optimized ensemble weights.
+
+        Parameters:
+            - y_true: array-like, true labels
+            - y_preds: list of array-like, predicted labels from each model
+
+        Returns:
+            - weighted_pred: array-like, weighted ensemble predictions
+        """
         self.fit(y_true, y_preds)
         return self.predict(y_preds)
     
     def weights(self):
+        """
+        Get the optimized ensemble weights.
+
+        Returns:
+            - weights: list, optimized ensemble weights
+        """
         return self.weights
     
 ############################################
 
 class Trainer():
+    """
+    Trainer class for training and evaluating an ensemble of classification models.
+
+    Methods:
+        - save_log(losses, X_train): Save training log to a JSON file.
+        - main(X_train, X_test, y_train, y_test, best_ensemble=False): Train and evaluate the ensemble.
+
+    Example:
+        trainer = Trainer()
+        trainer.main(X_train, X_test, y_train, y_test, best_ensemble=False)
+    """
     def save_log(self, losses, X_train):
+        """
+        Save training log to a JSON file.
+
+        Parameters:
+            - losses: DataFrame, training losses
+            - X_train: DataFrame, training features
+        """
         models = losses['Model'].unique().tolist()
         models.pop(models.index('Ensemble'))
         train_acc = losses[losses['Model']=='Ensemble']['Train Acc'].values[0]
         acc = losses[losses['Model']=='Ensemble']['Test Acc'].values[0]
         roc_auc = losses[losses['Model']=='Ensemble']['Test ROC AUC'].values[0]
-        f1 = losses[losses['Model']=='Ensemble']['Test F1'].values[0]
-        precision = losses[losses['Model']=='Ensemble']['Test Precision'].values[0]
-        recall = losses[losses['Model']=='Ensemble']['Test Recall'].values[0]
+        # f1 = losses[losses['Model']=='Ensemble']['Test F1'].values[0]
+        # precision = losses[losses['Model']=='Ensemble']['Test Precision'].values[0]
+        # recall = losses[losses['Model']=='Ensemble']['Test Recall'].values[0]
         features = X_train.columns
 
         path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models/logs.json')
@@ -270,9 +372,9 @@ class Trainer():
                 'train_acc': train_acc,
                 'acc': acc,
                 'roc_auc': roc_auc,
-                'f1': f1,
-                'precision': precision,
-                'recall': recall,
+                # 'f1': f1,
+                # 'precision': precision,
+                # 'recall': recall,
                 'features': features.tolist()
             }
             # data[f'Ensemble {n}']['models'].append(models)
@@ -289,6 +391,16 @@ class Trainer():
     ############################################
 
     def main(self, X_train, X_test, y_train, y_test, best_ensemble=False):
+        """
+        Train and evaluate the ensemble.
+
+        Parameters:
+            - X_train: DataFrame, training features
+            - X_test: DataFrame, test features
+            - y_train: Series, training labels
+            - y_test: Series, test labels
+            - best_ensemble: bool, whether to use Optuna for optimizing ensemble weights
+        """
         kfold = False
         n_splits = 1 if not kfold else 5
         random_state = 2023
@@ -324,7 +436,7 @@ class Trainer():
         names = []
         oof_preds = []
         test_preds = []
-        losses = pd.DataFrame(columns=['Model', 'Train Acc', 'Test Acc', 'Test ROC AUC', 'Test F1', 'Test Precision', 'Test Recall'])
+        losses = pd.DataFrame(columns=['Model', 'Train Acc', 'Test Acc', 'Test ROC AUC'])
 
         # Loop over each base model and fit it to the training data, evaluate on validation data, and store predictions
         for name, model in models.items():
@@ -354,10 +466,10 @@ class Trainer():
             score = roc_auc_score(y_val, y_val_pred)
             acc = accuracy_score(y_val, y_val_pred.round())
             train_acc = accuracy_score(y_train_, model.predict(X_train_).round())
-            f1 = f1_score(y_val, y_val_pred.round())
-            precision = precision_score(y_val, y_val_pred.round())
-            recall = recall_score(y_val, y_val_pred.round())
-            losses.loc[len(losses)] = [name, train_acc, acc, score, f1, precision, recall]
+            # f1 = f1_score(y_val, y_val_pred.round())
+            # precision = precision_score(y_val, y_val_pred.round())
+            # recall = recall_score(y_val, y_val_pred.round())
+            losses.loc[len(losses)] = [name, train_acc, acc, score]
         #         score = accuracy_score(y_val, acc_cutoff_class(y_val, y_val_pred))
 
             print(f'{name} ROC AUC score: {score:.2%} | Accuracy {acc:.2%}')
@@ -372,22 +484,30 @@ class Trainer():
 
         if best_ensemble:
             model_preds = dict(zip(names, oof_preds))
-            n = 4
-            while n < len(losses) + 1:
-                losses_ = losses.sort_values(by='Test ROC AUC', ascending=False).head(n)
-                names_ = losses_['Model'].values.tolist()
-                oof_preds_ = [model_preds[name] for name in names_]
-                optweights = OptunaWeights(random_state=random_state)
-                y_val_pred = optweights.fit_predict(y_val.values, oof_preds_)
 
-                score = roc_auc_score(y_val, y_val_pred)
-                acc = accuracy_score(y_val, y_val_pred.round())
-                train_acc = accuracy_score(y_train_, model.predict(X_train_).round())
-                f1 = f1_score(y_val, y_val_pred.round())
-                precision = precision_score(y_val, y_val_pred.round())
-                recall = recall_score(y_val, y_val_pred.round())
-                losses_.loc[len(losses_)] = ['Ensemble', train_acc, acc, score, f1, precision, recall]
-                losses_.sort_values(by='Test Acc', ascending=False, inplace=True)
+            study = optuna.create_study(direction='maximize')
+            study.optimize(lambda trial: self.optimize_ensemble_weights(trial, oof_preds, y_val), n_trials=100)
+
+            best_weights = study.best_params
+            best_weights = [best_weights[f'weight_{i}' ] for i in range(len(oof_preds))]
+            best_weights /= np.sum(best_weights)  # Normalize weights to sum to 1
+
+            y_val_pred = np.average(oof_preds, axis=0, weights=best_weights)
+            score = roc_auc_score(y_val, y_val_pred)
+
+            losses.loc[len(losses)] = ['Ensemble', score]
+            losses.sort_values(by='Test ROC AUC', ascending=False, inplace=True)
+            print(f'Ensemble ------------------> ROC AUC score {score:.2%}')
+            
+            ensemble_score.append(score)
+            weights.append(best_weights)
+
+            # Apply the optimized weights to test predictions
+            test_predss += np.average(test_preds, axis=0, weights=best_weights) / (n_splits * len(random_state_list))
+
+            gc.collect()
+
+            self.save_log(losses, X_train)
         
         else:
             optweights = OptunaWeights(random_state=random_state)
@@ -396,10 +516,10 @@ class Trainer():
             score = roc_auc_score(y_val, y_val_pred)
             acc = accuracy_score(y_val, y_val_pred.round())
             train_acc = accuracy_score(y_train_, model.predict(X_train_).round())
-            f1 = f1_score(y_val, y_val_pred.round())
-            precision = precision_score(y_val, y_val_pred.round())
-            recall = recall_score(y_val, y_val_pred.round())
-            losses.loc[len(losses)] = ['Ensemble', train_acc, acc, score, f1, precision, recall]
+            # f1 = f1_score(y_val, y_val_pred.round())
+            # precision = precision_score(y_val, y_val_pred.round())
+            # recall = recall_score(y_val, y_val_pred.round())
+            losses.loc[len(losses)] = ['Ensemble', train_acc, acc, score]
             losses.sort_values(by='Test Acc', ascending=False, inplace=True)
             #     score = accuracy_score(y_val, acc_cutoff_class(y_val, y_val_pred))
             print(f'Ensemble ------------------>  ROC AUC score {score:.2%}')
@@ -413,4 +533,3 @@ class Trainer():
             self.save_log(losses, X_train)
 
         return test_predss, losses
-    

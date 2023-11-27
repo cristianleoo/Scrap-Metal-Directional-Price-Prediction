@@ -18,6 +18,15 @@ import matplotlib.pyplot as plt
 
 class FeatureEngineering:
     def __init__(self, train, test, target, cont_cols):
+        """
+        Initialize the FeatureEngineering class.
+
+        Parameters:
+        - train (pd.DataFrame): Training dataset.
+        - test (pd.DataFrame): Testing dataset.
+        - target (str): Name of the target column.
+        - cont_cols (list): List of continuous feature columns.
+        """
         self.unimportant_features=[]
         self.overall_best_score=0
         self.overall_best_col='none'
@@ -25,6 +34,7 @@ class FeatureEngineering:
         self.test=test
         self.target=target
         self.cont_cols=cont_cols
+        self.cat_cols = train.drop(cont_cols, axis=1).columns[:-1] #these are the text features
         # self.sc=MinMaxScaler()
         
     # def min_max_scaler(self, train, test, column):
@@ -40,9 +50,9 @@ class FeatureEngineering:
     #     return train,test  
 
     def transformer(self):
-        '''
-        Algorithm applies multiples transformations on selected columns and finds the best transformation using a single variable model performance
-        '''
+        """
+        Apply multiple transformations on selected columns and find the best transformation using a single variable model performance.
+        """
         train_copy = self.train.copy()
         test_copy = self.test.copy()
         table = PrettyTable()
@@ -147,6 +157,9 @@ class FeatureEngineering:
     #############################
 
     def numerical_clustering(self):
+        """
+        Cluster numerical features based on unimportant features and calculate ROC AUC score on the transformed data.
+        """
         table = PrettyTable()
         table.field_names = ['Clustered Feature', 'ROC AUC (CV-TRAIN)']
         for col in self.cont_cols:
@@ -192,6 +205,16 @@ class FeatureEngineering:
     #############################
 
     def better_features(self, cols, best_score):
+        """
+        Generate new columns by applying arithmetic operations on existing ones.
+
+        Parameters:
+        - cols (list): List of feature columns.
+        - best_score (float): Best ROC AUC score obtained so far.
+
+        Returns:
+        - pd.DataFrame, pd.DataFrame, list: Updated train dataset, test dataset, and list of new columns.
+        """
         new_cols = []
         skf = KFold(n_splits=5, shuffle=True, random_state=42)  # Stratified k-fold object
         best_list=[]
@@ -250,15 +273,28 @@ class FeatureEngineering:
     #############################
 
     def main(self):
+        """
+        Perform feature generation and selection using the better_features method.
+
+        Returns:
+        - pd.DataFrame, pd.DataFrame, list: Updated train dataset, test dataset, and list of new columns.
+        """
         selected_features=[f for f in self.train.columns if self.train[f].nunique()>2 and f not in self.unimportant_features]
+        selected_features = [col for col in selected_features if col not in self.cat_cols]
         train, test, new_cols= self.better_features(selected_features, self.overall_best_score)
         return train, test, new_cols
     
     #############################
     def apply_arithmetic_operations(self, expressions_list):
-        '''
-        We pass the selected arithmetic combinations
-        '''
+        """
+        Apply arithmetic operations on selected feature columns.
+
+        Parameters:
+        - expressions_list (list): List of arithmetic expressions.
+
+        Returns:
+        - pd.DataFrame, pd.DataFrame: Updated train and test datasets.
+        """
         train_df = self.train.copy()
         test_df = self.test.copy()
 
@@ -294,6 +330,16 @@ class FeatureEngineering:
     # FEATURE SELECTION
 
     def feature_elimination(self, train, test):
+        """
+        Eliminate unimportant features based on correlation and clustering.
+
+        Parameters:
+        - train (pd.DataFrame): Training dataset.
+        - test (pd.DataFrame): Testing dataset.
+
+        Returns:
+        - pd.DataFrame, pd.DataFrame: Updated train and test datasets.
+        """
         first_drop=[ f for f in self.unimportant_features if f in train.columns]
         train=train.drop(columns=first_drop)
         test=test.drop(columns=first_drop)
@@ -306,7 +352,7 @@ class FeatureEngineering:
         best_cols=[]
 
         for col in self.cont_cols:
-            sub_set=[f for f in train.columns if (str(col) in str(f)) and (train[f].nunique()>2)]
+            sub_set=[f for f in train.drop(self.cat_cols, axis=1).columns if (str(col) in str(f)) and (train[f].nunique()>2)]
         #     print(sub_set)
             if len(sub_set)>2:
                 correlated_features = []
@@ -387,7 +433,17 @@ class FeatureEngineering:
     #############################
 
     def scaling(self, train, test):
-        final_features=[f for f in train.columns if f not in [self.target]]
+        """
+        Scale selected features in the train and test datasets.
+
+        Parameters:
+        - train (pd.DataFrame): Training dataset.
+        - test (pd.DataFrame): Testing dataset.
+
+        Returns:
+        - pd.DataFrame, pd.DataFrame: Scaled train and test datasets.
+        """
+        final_features=[f for f in train.columns if f not in [self.target] and f not in self.cat_cols]
         final_features=[*set(final_features)]
 
         sc=StandardScaler()
@@ -401,11 +457,21 @@ class FeatureEngineering:
     #############################
 
     def post_processor(self, train, test):
+        """
+        Remove duplicate features after scaling.
+
+        Parameters:
+        - train (pd.DataFrame): Training dataset.
+        - test (pd.DataFrame): Testing dataset.
+
+        Returns:
+        - pd.DataFrame, pd.DataFrame: Updated train and test datasets.
+        """
         # train, test = self.scaling(train, test)
         '''
         After Scaleing, some of the features may be the same and can be eliminated
         '''
-        cols=[f for f in train.columns if self.target not in f and "OHE" not in f]
+        cols=[f for f in train.columns if self.target not in f and "OHE" not in f and f not in self.cat_cols]
         train_cop=train.copy()
         test_cop=test.copy()
         drop_cols=[]
@@ -423,9 +489,16 @@ class FeatureEngineering:
     #############################
 
     def main_feature_elimination(self, train, test):
-        '''
-        This function is used to eliminate the features which are not important
-        '''
+        """
+        Perform feature elimination, scaling, and post-processing.
+
+        Parameters:
+        - train (pd.DataFrame): Training dataset.
+        - test (pd.DataFrame): Testing dataset.
+
+        Returns:
+        - pd.DataFrame, pd.DataFrame: Updated train and test datasets.
+        """
         train, test = self.scaling(train, test)
         train, test = self.feature_elimination(train, test)
         train, test = self.post_processor(train, test)
@@ -439,6 +512,19 @@ class FeatureEngineering:
                                     n, 
                                     model_input,
                                     visualize=True):
+        """
+        Get the most important features using a specified model.
+
+        Parameters:
+        - X_train (pd.DataFrame): Training feature dataset.
+        - y_train (pd.Series): Training target variable.
+        - n (int): Number of top features to select.
+        - model_input (str): Model name ('cat', 'xgb', or 'lgbm').
+        - visualize (bool): Whether to visualize feature importances.
+
+        Returns:
+        - list: Top N important feature names.
+        """
         xgb_params = {
                 'n_jobs': -1,
                 'eval_metric': 'logloss',
@@ -468,7 +554,7 @@ class FeatureEngineering:
         else:
             model=lgb.LGBMClassifier(**lgb_params)
             
-        
+        X_train.drop(self.cat_cols, axis=1, inplace=True)
 
         X_train_fold, X_val_fold = X_train.iloc[:int(len(X_train)*0.8), :], X_train.iloc[int(len(X_train)*0.8):, :]
         y_train_fold, y_val_fold = y_train.iloc[:int(len(X_train)*0.8)], y_train.iloc[int(len(X_train)*0.8):]
@@ -510,10 +596,23 @@ class FeatureEngineering:
     #############################
 
     def final_selection(self, X_train, y_train, n=150, visualize=True):
+        """
+        Perform final feature selection using different models.
+
+        Parameters:
+        - X_train (pd.DataFrame): Training feature dataset.
+        - y_train (pd.Series): Training target variable.
+        - n (int): Number of top features to select.
+        - visualize (bool): Whether to visualize feature importances.
+
+        Returns:
+        - pd.DataFrame, list: Updated train dataset and list of selected features.
+        """
         n_imp_features_cat=self.get_most_important_features(X_train.reset_index(drop=True), y_train, n, 'cat', visualize)
         n_imp_features_xgb=self.get_most_important_features(X_train.reset_index(drop=True), y_train, n, 'xgb', visualize)
         n_imp_features_lgbm=self.get_most_important_features(X_train.reset_index(drop=True), y_train, n, 'lgbm', visualize)
         n_imp_features=[*set(n_imp_features_xgb+n_imp_features_lgbm+n_imp_features_cat)]
+        n_imp_features.extend(self.cat_cols)
         print(f"{len(n_imp_features)} features have been selected from three algorithms for the final model")
         X_train=X_train[n_imp_features]
         return X_train, n_imp_features
