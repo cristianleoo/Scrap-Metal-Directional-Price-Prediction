@@ -143,9 +143,121 @@ The `main.py` script orchestrates the data pulling process and sentiment analysi
 python main.py
 ```
 
-## Machine Learning Model
+## Feature Engineering Methodology
+The `FeatureEngineering` class in the machine learning model section appears to be responsible for handling feature engineering tasks, including transformations, clustering, generating new features through arithmetic operations, and selecting the most important features for the final model. Let's break down the key functionalities of this class:
 
-The project employs the CatBoost machine learning algorithm for stock price prediction. The model is trained and evaluated using data from various sources.
+### Initialization:
+- The class is initialized with training and testing datasets (`train` and `test`), the name of the target column (`target`), and a list of continuous feature columns (`cont_cols`).
+
+### Transformer:
+- Applies multiple transformations (log, square root, Box-Cox, Yeo-Johnson, power transformations) on selected continuous columns.
+- Utilizes PCA to reduce dimensionality.
+- Trains a Support Vector Classifier (SVC) on each transformed feature and selects the best-performing one based on ROC AUC scores.
+
+### Numerical Clustering:
+- Clusters numerical features based on unimportant features obtained from the transformer step.
+- Applies KMeans clustering and calculates the ROC AUC score on the transformed data.
+
+### Better Features:
+- Generates new columns by applying arithmetic operations on existing ones.
+- Selects the best-performing new feature based on ROC AUC scores.
+
+### Main:
+- Calls the `better_features` method to perform feature generation and selection.
+
+### Apply Arithmetic Operations:
+- Applies specified arithmetic operations on selected feature columns.
+
+### Feature Elimination:
+- Eliminates unimportant features based on correlation and clustering.
+- Uses PCA for dimensionality reduction.
+- Applies KMeans clustering.
+- Selects the best-performing transformation for each feature based on ROC AUC scores.
+
+### Scaling:
+- Scales selected features in the train and test datasets.
+
+### Post Processor:
+- Removes duplicate features after scaling.
+
+### Main Feature Elimination:
+- Combines feature elimination, scaling, and post-processing.
+
+### Get Most Important Features:
+- Utilizes different models (XGBoost, CatBoost, LightGBM) to obtain the most important features.
+- Visualizes the top features.
+
+### Final Selection:
+- Performs final feature selection using different models.
+- Returns the updated train dataset and a list of selected features.
+
+### Model Methodology
+
+#### Classifier Class
+
+The `Classifier` class is designed for defining and initializing multiple classification models. It has the following parameters:
+
+- **n_estimators**: int, default=100, number of estimators for ensemble models.
+- **device**: str, default="cpu", device type for CatBoost ("cpu" or "gpu").
+- **random_state**: int, default=0, random state for reproducibility.
+
+The `Classifier` class provides the following methods:
+
+1. **\_define_model()**: Define and return a dictionary of classification models.
+
+Here's a brief overview of the models defined in the `Classifier` class:
+
+- **XGBoost Models:**
+  - `xgb`: XGBoost classifier with default parameters.
+  - `xgb2`: XGBoost classifier with customized parameters.
+  - `xgb3`: XGBoost classifier with different customized parameters.
+
+- **LightGBM Models:**
+  - `lgb`: LightGBM classifier with default parameters.
+  - `lgb2`: LightGBM classifier with customized parameters.
+  - `lgb3`: LightGBM classifier with different customized parameters.
+  - `lgb4`: Additional LightGBM classifier.
+
+- **CatBoost Models:**
+  - `cat`: CatBoost classifier with default parameters.
+  - `cat2`, `cat3`, `cat4`: CatBoost classifiers with different customized parameters.
+  - `cat_sym`: CatBoost classifier with a symmetric tree grow policy.
+  - `cat_loss`: CatBoost classifier with a lossguide tree grow policy.
+
+- **Other Models:**
+  - `hist_gbm`: Histogram-based Gradient Boosting Classifier.
+  - `lr`: Logistic Regression.
+  - `rf`: Random Forest Classifier.
+
+#### OptunaWeights Class
+
+The `OptunaWeights` class is designed for optimizing ensemble weights using Optuna. It has the following parameters:
+
+- **random_state**: int, random state for reproducibility.
+- **n_trials**: int, default=5000, the number of trials for optimization.
+
+The `OptunaWeights` class provides the following methods:
+
+1. **fit(y_true, y_preds)**: Optimize ensemble weights using Optuna.
+2. **predict(y_preds)**: Predict using the optimized ensemble weights.
+3. **fit_predict(y_true, y_preds)**: Fit and predict using the optimized ensemble weights.
+4. **weights()**: Get the optimized ensemble weights.
+
+#### Trainer Class
+
+The `Trainer` class is designed for training and evaluating an ensemble of classification models. It provides the following methods:
+
+1. **save_log(losses, X_train)**: Save the training log to a JSON file.
+2. **main(X_train, X_test, y_train, y_test, best_ensemble=False)**: Train and evaluate the ensemble.
+
+Example of usage:
+
+```python
+trainer = Trainer()
+trainer.main(X_train, X_test, y_train, y_test, best_ensemble=False)
+```
+
+The `main` method initializes the base classifiers, trains them on the training data, evaluates their performance on the validation set, and computes ensemble predictions. If `best_ensemble` is set to `True`, it uses Optuna to optimize ensemble weights. The training log is saved to a JSON file.
 
 ## License
 
