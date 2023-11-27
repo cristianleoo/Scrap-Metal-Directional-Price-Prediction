@@ -4,6 +4,7 @@ import time
 import os
 from openai import OpenAI
 from timeout_decorator import timeout, TimeoutError
+import json
 
 class GPT:
     def __init__(self, tickr, df=None, input='body', timeout=30, load=True):
@@ -17,7 +18,10 @@ class GPT:
         - timeout (int, optional): The timeout value for API requests. Default is 30.
         - load (bool, optional): Whether to load the sentiment data or not. Default is True.
         """
-        self.client = OpenAI(api_key='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')
+        with open('api-keys.json') as f:
+            api_keys = json.load(f)
+        
+        self.client = OpenAI(api_key=api_keys['openai'])
         self.tickr = tickr
         self.df = df
         self.data_path = os.path.dirname(os.path.abspath(__file__)) + '/data'
