@@ -1,5 +1,5 @@
 from etl.etl import ETL
-from etl.benzinga_tool import financial_data,news_data
+from etl.benzinga_tool import financial_data, news_data
 from etl.benzinga_tool.news_data import News
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -8,9 +8,18 @@ import json
 import datetime
 import os
 
-# inherit from ETL class
+# Class for extracting, transforming, and loading data from Benzinga API
 class Benzinga(ETL):
     def __init__(self, tick_list, etfs=None, display_output='full', *args, **kwargs):
+        """
+        Initialize the Benzinga class.
+
+        Parameters:
+        - tick_list: list of ticker symbols to retrieve data for
+        - etfs: list of ETF symbols to include in the tick_list
+        - display_output: display option for news data (abstract, full, or headline)
+        - *args, **kwargs: additional arguments and keyword arguments for the parent class
+        """
         super().__init__(*args, **kwargs)
         self.tick_list = tick_list
         self.etfs = etfs
@@ -18,29 +27,44 @@ class Benzinga(ETL):
             self.tick_list.extend(self.etfs)
         self.start_day = None
         self.end_day = None
-        self.display_output = display_output # abstract or full or headline
+        self.display_output = display_output
         self.retrieving_all = False
 
-    # helper function to clean the text
     def clean_text(self, text):
-        # Remove HTML tags using Beautiful Soup
+        """
+        Clean the text by removing HTML tags and special characters.
+
+        Parameters:
+        - text: input text to be cleaned
+
+        Returns:
+        - clean_text: cleaned text
+        """
         soup = BeautifulSoup(text, 'html.parser')
         clean_text = soup.get_text().replace('\n', ' ').replace('"', '').replace('\u2028', ' ').replace('\u2029', ' ').replace('\r', ' ')
         return ' '.join(clean_text.split())
 
-    # clean the response data
     def process_stories(self, stories, ticker):
+        """
+        Process the retrieved stories by cleaning the data and filtering based on ticker.
+
+        Parameters:
+        - stories: list of stories to be processed
+        - ticker: ticker symbol to filter the stories
+
+        Returns:
+        - df: processed DataFrame containing the relevant stories
+        """
         if self.retrieving_all:
-             df = pd.DataFrame(stories)#[['created', 'title', 'body']]
-             df['stocks'] = df['stocks'].apply(lambda x: [entry['name'] for entry in x])
-             df['stocks'] = df['stocks'].apply(lambda x: ', '.join(x))
-             df['stocks'] = df['stocks'].apply(str.upper)
-             #if df['stocks'].str.contains(ticker).sum() > 0:
-             try:
+            df = pd.DataFrame(stories)
+            df['stocks'] = df['stocks'].apply(lambda x: [entry['name'] for entry in x])
+            df['stocks'] = df['stocks'].apply(lambda x: ', '.join(x))
+            df['stocks'] = df['stocks'].apply(str.upper)
+            try:
                 df = df[df['stocks'].str.contains(ticker)][['created', 'title', 'body']]
                 print(df.head())
                 print(f"Found {len(df)} stories for {ticker}")
-             except Exception:
+            except Exception:
                 print(f"No stories found for {ticker}")
                 df = None
         else:
@@ -52,24 +76,32 @@ class Benzinga(ETL):
         df['created'] = df['created'].dt.date
         return df
 
-    # make requests to Benzinga API
     def benzinga_call(self, news, ticker, fromdate, todate):
+        """
+        Make requests to the Benzinga API to retrieve news data.
+
+        Parameters:
+        - news: Benzinga News object
+        - ticker: ticker symbol to retrieve data for
+        - fromdate: start date for the data retrieval
+        - todate: end date for the data retrieval
+
+        Returns:
+        - df: processed DataFrame containing the retrieved news data
+        """
         stories = news.news(display_output=self.display_output, company_tickers=ticker, pagesize=100, date_from=fromdate, date_to=todate)
         print(f"A. Found {len(stories)} stories in the response.")
         if len(stories) == 0:
             self.retrieving_all = True
             print("Stories for single ticker not found. Retrieving all stories.")
             stories = news.news(display_output=self.display_output, pagesize=100, date_from=fromdate, date_to=todate)
-            
         else:
-            if len(pd.DataFrame(stories))==0:
+            if len(pd.DataFrame(stories)) == 0:
                 self.retrieving_all = True
                 print("Stories for single ticker not found. Retrieving all stories.")
                 stories = news.news(display_output=self.display_output, pagesize=100, date_from=fromdate, date_to=todate)
             else:
                 print(f"B. Found {len(stories)} stories in the response.")
-            #pd.DataFrame(stories).head().to_csv(f'{os.getcwd()}/data/benzinga.csv', index=False)
-            #print(stories)
         
         df = self.process_stories(stories, ticker=ticker)
 
@@ -92,8 +124,16 @@ class Benzinga(ETL):
                 fromdate = (df.iloc[-1, 0] - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         return df
 
-    # call Benzinga API to get one ticker data
     def get(self, tick):
+        """
+        Retrieve news data for a single ticker.
+
+        Parameters:
+        - tick: ticker symbol to retrieve data for
+
+        Returns:
+        - df: processed DataFrame containing the retrieved news data
+        """
         news = News(api_token=self.api_keys['Benzinga'])
         df = self.benzinga_call(news, ticker=tick, fromdate=self.start_day, todate=self.end_day)
         if df is not None:
@@ -102,8 +142,14 @@ class Benzinga(ETL):
         else:
             df = self.benzinga_call(news, ticker=None, fromdate=self.start_day, todate=self.end_day)
     
-    # batch call Benzinga API to get all tickers data from a list
     def pull_batch_benzinga(self, start_day, end_day):
+        """
+        Batch retrieve news data for multiple tickers.
+
+        Parameters:
+        - start_day: start date for the data retrieval
+        - end_day: end date for the data retrieval
+        """
         self.start_day = start_day
         self.end_day = end_day
 

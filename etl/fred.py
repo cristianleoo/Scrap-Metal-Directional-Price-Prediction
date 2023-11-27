@@ -25,6 +25,12 @@ class Fredapi(ETL):
     # Fetch macro data from FRED
 
     def fetch_macro_data(self):
+        """
+        Fetches macroeconomic data from FRED API and saves it as a CSV file.
+
+        Returns:
+        - macro_df (pandas.DataFrame): DataFrame containing the fetched macroeconomic data.
+        """
         fred = Fred(api_key=self.api_keys["Fred"])
         dfs = []
 
@@ -65,8 +71,16 @@ class Fredapi(ETL):
     #############################################
     # Fetch ferrous and non-ferrous metal prices
 
-    # Helper function to call the API
     def call(self, series_id):
+        """
+        Helper function to call the FRED API and retrieve data for a given series ID.
+
+        Args:
+        - series_id (str): The series ID to fetch data for.
+
+        Returns:
+        - df (pandas.DataFrame): DataFrame containing the fetched data.
+        """
         params = {'series_id': series_id,
                 'observation_start': self.start_day,
                 'observation_end': self.end_day,
@@ -79,13 +93,32 @@ class Fredapi(ETL):
     
 
     def preprocess(self, df):
+        """
+        Preprocesses the fetched data by converting date column to datetime and handling missing values.
+
+        Args:
+        - df (pandas.DataFrame): DataFrame containing the fetched data.
+
+        Returns:
+        - df (pandas.DataFrame): Preprocessed DataFrame.
+        """
         df['date'] = pd.to_datetime(df['date'])
         df['value'] = df['value'].apply(lambda x: float(x) if x!='.' else np.nan)
         df = df[['date', 'value']]
         return df
     
-    # Helper function to join tables
     def join_tables(self, price, inv, orders):
+        """
+        Helper function to join price, inventory, and orders tables.
+
+        Args:
+        - price (pandas.DataFrame): DataFrame containing price data.
+        - inv (pandas.DataFrame): DataFrame containing inventory data.
+        - orders (pandas.DataFrame): DataFrame containing orders data.
+
+        Returns:
+        - df (pandas.DataFrame): Joined DataFrame.
+        """
         price = self.preprocess(price)
         inv = self.preprocess(inv)
         orders = self.preprocess(orders)
@@ -99,15 +132,29 @@ class Fredapi(ETL):
                   inplace=True)
         return df
     
-    # Helper function to post data
     def post_scrap(self, df, name):
-            if not os.path.exists(f'{os.getcwd()}/data/fred'):
-                os.makedirs(f'{os.getcwd()}/data/fred')
-                print(f"Created directory {os.getcwd()}/data/fred")
-            df.to_csv(f'{os.getcwd()}/data/fred/{name}.csv', index=False)
+        """
+        Helper function to post the scraped data as a CSV file.
+
+        Args:
+        - df (pandas.DataFrame): DataFrame containing the scraped data.
+        - name (str): Name of the CSV file.
+
+        Returns:
+        None
+        """
+        if not os.path.exists(f'{os.getcwd()}/data/fred'):
+            os.makedirs(f'{os.getcwd()}/data/fred')
+            print(f"Created directory {os.getcwd()}/data/fred")
+        df.to_csv(f'{os.getcwd()}/data/fred/{name}.csv', index=False)
     
-    # Fetch ferrous prices
     def fetch_scrap(self):
+        """
+        Fetches ferrous and non-ferrous metal prices, preprocesses the data, and saves it as CSV files.
+
+        Returns:
+        None
+        """
         ferrous_price = self.call(self.series_ids['ferrous_price'])
         ferrous_inv = self.call(self.series_ids['ferrous_inventory'])
         ferrous_orders = self.call(self.series_ids['ferrous_orders'])
@@ -119,9 +166,3 @@ class Fredapi(ETL):
         non_ferrous_orders = self.call(self.series_ids['non_ferrous_orders'])
         non_ferrous = self.join_tables(non_ferrous_price, non_ferrous_inv, non_ferrous_orders)
         self.post_scrap(non_ferrous, 'non_ferrous')
-
-    #############################################
-
-    
-
-
