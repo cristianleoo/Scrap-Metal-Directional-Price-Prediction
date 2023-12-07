@@ -4,8 +4,6 @@
 
 This project focuses on analyzing financial news sentiment and utilizing machine learning models to predict stock prices based on the sentiment analysis. It integrates data from various sources, including financial news articles, stock prices, economic indicators, and weather data. The sentiment analysis is performed using two models: FinBert and GPT (Generative Pre-trained Transformer). The machine learning model for price prediction employs the CatBoost algorithm.
 
-Based on the provided project structure and code, it appears to be a comprehensive data pipeline and machine learning project. Here's a description of what the project does:
-
 ## Model Architecture
 ![Model Architecture](model_architecture.png)
 
