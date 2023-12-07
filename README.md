@@ -6,6 +6,9 @@ This project focuses on analyzing financial news sentiment and utilizing machine
 
 Based on the provided project structure and code, it appears to be a comprehensive data pipeline and machine learning project. Here's a description of what the project does:
 
+## Model Architecture
+![Model Architecture](model_architecture.png)
+
 ## Project Structure
 
 The project structure is organized as follows:
@@ -51,7 +54,6 @@ The project structure is organized as follows:
 │   ├── sample
 │   │   ├── ...
 │   ├── target
-│   │   ├── NAT DATABASE.xlsx
 │   │   └── target_clean.csv
 │   ├── weather
 │   │   └── weather.csv
@@ -111,6 +113,9 @@ To run the project, follow these steps:
    pip install -r requirements.txt
    ```
 
+3. **Add updated NAT DATABASE.xlsx file**
+   Go to data/target and upload the NAT DATABASE.xlsx file. Please make sure it's named in the same way.
+
 3. **Set Up API Keys:**
    Add your API keys to the `api-keys.json` file.
 
@@ -124,9 +129,9 @@ To run the project, follow these steps:
 - **Benzinga:** Financial news articles.
 - **GPT:** Sentiment analysis using the Generative Pre-trained Transformer.
 - **FinBert:** Sentiment analysis using the FinBert model.
-- **Yahoo Finance:** Historical stock prices.
-- **FRED:** Federal Reserve Economic Data.
-- **AlphaVantage:** Financial market data.
+- **Yahoo Finance:** Historical stock and ETF prices.
+- **FRED:** Federal Reserve Economic Data like total new orders and inventory of scrap metals.
+- **AlphaVantage:** Financial market data and sentiment data.
 - **Weather:** Weather data.
 
 ## **Project Workflow (main.py):**
@@ -191,9 +196,11 @@ The `FeatureEngineering` class in the machine learning model section appears to 
 - Performs final feature selection using different models.
 - Returns the updated train dataset and a list of selected features.
 
-### Model Methodology
+![Feature Importance with XGBoost](feature_importance_xgb.png)
 
-#### Classifier Class
+## Model Methodology
+
+### Classifier Class
 
 The `Classifier` class is designed for defining and initializing multiple classification models. It has the following parameters:
 
@@ -229,7 +236,7 @@ Here's a brief overview of the models defined in the `Classifier` class:
   - `lr`: Logistic Regression.
   - `rf`: Random Forest Classifier.
 
-#### OptunaWeights Class
+### OptunaWeights Class
 
 The `OptunaWeights` class is designed for optimizing ensemble weights using Optuna. It has the following parameters:
 
@@ -243,7 +250,7 @@ The `OptunaWeights` class provides the following methods:
 3. **fit_predict(y_true, y_preds)**: Fit and predict using the optimized ensemble weights.
 4. **weights()**: Get the optimized ensemble weights.
 
-#### Trainer Class
+### Trainer Class
 
 The `Trainer` class is designed for training and evaluating an ensemble of classification models. It provides the following methods:
 
@@ -258,6 +265,17 @@ trainer.main(X_train, X_test, y_train, y_test, best_ensemble=False)
 ```
 
 The `main` method initializes the base classifiers, trains them on the training data, evaluates their performance on the validation set, and computes ensemble predictions. If `best_ensemble` is set to `True`, it uses Optuna to optimize ensemble weights. The training log is saved to a JSON file.
+
+![Model Importance with Optuna](model_importances.png)
+
+## Next Steps
+Please consider approaching the following next steps to further improve the model:
+1. **Automatize the target data ingestion**:  the current project retrieves data from a file provided by DJJ called "NAT DATABASE.xlsx" inside the data/target directory. Therefore, to predict/train an updated dataset, a manual replacement of the dataset is needed.
+2. **Activate AlphaVantage with premium API**: AlphaVantage is a leader in the market sentiment space. It provides useful data about general sentiment of companies (Sell, Hold, Buy), and news sentiment.
+2. **Daily frequency of predictions**: according to DJJ's request, the model predicts monthly data. However, this present a big limitation, which is the dataset size. The current model ingest data from January 2010 to September 2023, with approximately 200 rows. This results in a very small dataset, which obstacles a high effective training of the model, and adoption of more powerful machine learning solutions.
+3. **Integrate results from GMK**: As of now, the project includes a web scraper to retrieve information from GMK. However, the current dataset ranges from 2019 to 2023, the lack of prior data makes it unsuitable for data training. Therefore, the news from GMK are currently not used to train the model. Future implementation, may involve adjusting the webscraper to retrieve older information, or replace the missing information with other sources.
+4. **Deep Reinforcement Learning - PPO**: One of the most powerful solutions to predict either the direction of the price or the price itself is leveraging deep reinforcement learning, like PPO. The current project avoid adopting it because it requires a bigger dataset, and it's time and computational expensive.
+5. **Retrain the model**: Consider retraining the model every three months, or anytime there is an economic downturn. 
 
 ## License
 
@@ -278,4 +296,4 @@ Feel free to contribute by opening issues or submitting pull requests.
 
 ## Contact
 
-For inquiries, please contact [cl4334@columbia.edu].
+For inquiries, please contact cl4334@columbia.edu.
