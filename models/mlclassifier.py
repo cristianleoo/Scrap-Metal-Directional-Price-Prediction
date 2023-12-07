@@ -8,12 +8,16 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import roc_auc_score, log_loss, accuracy_score, f1_score, precision_score, recall_score
 import numpy as np
 import optuna
+import optuna.visualization as vis
 from functools import partial
 import gc
 from copy import deepcopy
 import pandas as pd
 import os
 import json
+import pprint
+import matplotlib.pyplot as plt
+import seaborn as sns
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -442,19 +446,42 @@ class Trainer():
         for name, model in models.items():
             if ('cat' in name) or ("lgb" in name) or ("xgb" in name):
                 if 'lgb' == name: #categorical_feature=cat_features
-                    model.fit(X_train_, y_train_, eval_set=[(X_val, y_val)],#,categorical_feature=cat_features,
-                                )
+                    model.fit(X_train_, y_train_, eval_set=[(X_val, y_val)],
+                              )
+
                 elif 'cat' ==name:
                     model.fit(X_train_, y_train_, eval_set=[(X_val, y_val)],#cat_features=cat_features,
                                 early_stopping_rounds=early_stopping_rounds, verbose=verbose)
                 elif model.__class__.__name__ == 'LGBMClassifier':
-                    model.fit(X_train_, y_train_, eval_set=[(X_val, y_val)])
+                    model.fit(X_train_, y_train_, eval_set=[(X_val, y_val)],
+                                )
                 else:
                     model.fit(X_train_, y_train_, eval_set=[(X_val, y_val)], early_stopping_rounds=early_stopping_rounds, verbose=verbose)
+                    if name == 'xgb':
+                        feature_names = X_train_.columns
+                        # Assuming you have a trained model called `model`
+                        feature_importance = model.feature_importances_
+
+                        # Sort features and their importances in descending order
+                        indices = np.argsort(feature_importance)[::-1]
+                        sorted_feature_names = feature_names[indices]
+                        sorted_feature_importance = feature_importance[indices]
+
+                        # Plot the top 20 features
+                        plt.figure(figsize=(10, 6))
+                        sns.barplot(x=sorted_feature_importance[:20], y=sorted_feature_names[:20], palette="viridis")
+                        plt.xlabel('Importance', fontsize=14)
+                        plt.ylabel('Feature', fontsize=14)
+                        plt.title('Top 20 Feature Importance', fontsize=16)
+                        plt.grid(axis='x')
+                        sns.despine(left=True, bottom=True)
+                        plt.show()
+
             elif name in 'ann':
                 model.fit(X_train_, y_train_, validation_data=(X_val, y_val),batch_size=5, epochs=50,verbose=verbose)
             else:
                 model.fit(X_train_, y_train_)
+
             
             if name in 'ann':
                 test_pred = np.array(model.predict(X_test))[:, 0]
@@ -505,6 +532,31 @@ class Trainer():
             # Apply the optimized weights to test predictions
             test_predss += np.average(test_preds, axis=0, weights=best_weights) / (n_splits * len(random_state_list))
 
+            weight_to_model = {}
+
+            for i, name in enumerate(names):
+                if name in weight_to_model:
+                    continue
+                weight_to_model[f'weight{i}'] = name
+
+            # Replace weight names with model names
+            importance_dict = {weight_to_model.get(name, name): importance for name, importance in optuna.importance.get_param_importances(study).items()}
+
+            # Sort dictionary by values in ascending order
+            importance_dict = dict(sorted(importance_dict.items(), key=lambda item: item[1], reverse=True))
+
+            pprint.pprint(importance_dict)
+
+            # Create your own plot using seaborn for better aesthetics
+            plt.figure(figsize=(10, 6))
+            sns.barplot(x=list(importance_dict.values()), y=list(importance_dict.keys()), palette="viridis")
+            plt.xlabel('Importance', fontsize=14)
+            plt.ylabel('Model', fontsize=14)
+            plt.title('Model Importance', fontsize=16)
+            plt.grid(axis='x')
+            sns.despine(left=True, bottom=True)
+            plt.show()
+
             gc.collect()
 
             self.save_log(losses, X_train)
@@ -527,6 +579,33 @@ class Trainer():
             weights.append(optweights.weights)
 
             test_predss += optweights.predict(test_preds) / (n_splits * len(random_state_list))
+
+            # Assuming you have a mapping of weight names to model names
+
+            weight_to_model = {}
+
+            for i, name in enumerate(names):
+                if name in weight_to_model:
+                    continue
+                weight_to_model[f'weight{i}'] = name
+
+            # Replace weight names with model names
+            importance_dict = {weight_to_model.get(name, name): importance for name, importance in optuna.importance.get_param_importances(optweights.study).items()}
+
+            # Sort dictionary by values in ascending order
+            importance_dict = dict(sorted(importance_dict.items(), key=lambda item: item[1], reverse=True))
+
+            pprint.pprint(importance_dict)
+
+            # Create your own plot using seaborn for better aesthetics
+            plt.figure(figsize=(10, 6))
+            sns.barplot(x=list(importance_dict.values()), y=list(importance_dict.keys()), palette="viridis")
+            plt.xlabel('Importance', fontsize=14)
+            plt.ylabel('Model', fontsize=14)
+            plt.title('Model Importance', fontsize=16)
+            plt.grid(axis='x')
+            sns.despine(left=True, bottom=True)
+            plt.show()
 
             gc.collect()
 
